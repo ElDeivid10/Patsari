@@ -1,0 +1,90 @@
+---
+import Container from "../layout/Container.astro";
+import SectionHeader from "../layout/SectionHeader.astro";
+import SensorMesh from "../visuals/SensorMesh.astro";
+import Badge from "../ui/Badge.astro";
+import Button from "../ui/Button.astro";
+
+const principles = [
+  {
+    code: "PRN-01",
+    title: "Precisión sin compromiso",
+    body: "Cada lectura es trazable a estándares primarios. Calibramos in-situ y documentamos las cadenas de incertidumbre.",
+  },
+  {
+    code: "PRN-02",
+    title: "Independencia operativa",
+    body: "Infraestructura propia, redundancia N+2 y centros de proceso en dos continentes. Sin dependencias críticas externas.",
+  },
+  {
+    code: "PRN-03",
+    title: "Datos abiertos por defecto",
+    body: "El 70% de los productos derivados son públicos bajo licencias abiertas. El conocimiento地球 es patrimonio común.",
+  },
+];
+---
+
+<section id="mision" class="relative py-20 md:py-28 border-t border-[var(--color-border)]">
+  <Container>
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div class="lg:col-span-7 flex flex-col gap-8">
+        <SectionHeader
+          code="MISIÓN"
+          title="Medir la Tierra con la disciplina de una misión espacial"
+          description="Patsani nace de la convergencia entre instrumentación aeroespacial y observación ecológica. Construimos sistemas que producen datos verificables, auditables y útiles para la toma de decisiones ambientales."
+        />
+
+        <div class="flex flex-col gap-5">
+          {principles.map((p) => (
+            <article class="group relative border-l-2 border-[var(--color-border)] hover:border-[var(--color-primary)] pl-6 py-3 transition-colors duration-200">
+              <div class="absolute -left-px top-3 w-2 h-2 bg-[var(--color-border)] group-hover:bg-[var(--color-primary)] transition-colors"></div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">[{p.code}]</span>
+                <div class="h-px flex-1 bg-[var(--color-border)]"></div>
+              </div>
+              <h3 class="font-display font-semibold text-[1.125rem] leading-snug text-[var(--color-text-primary)] mb-2">
+                {p.title}
+              </h3>
+              <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
+                {p.body}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          <Button variant="secondary" href="#contacto">
+            <span>Hablar con el equipo</span>
+          </Button>
+          <Badge variant="nominal" withDot>En operación desde 2019</Badge>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 relative">
+        <div class="absolute inset-0 -m-8 pointer-events-none opacity-50">
+          <div class="absolute inset-0 grid-bg"></div>
+        </div>
+        <div class="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-8 shadow-elevated">
+          <div class="absolute top-3 right-3">
+            <Badge variant="telemetry" size="sm">RED ACTIVA</Badge>
+          </div>
+          <SensorMesh variant="default" animated />
+          <div class="mt-6 flex items-center justify-between text-[var(--color-text-secondary)]">
+            <div class="flex flex-col gap-0.5">
+              <span class="label-sm text-[var(--color-text-muted)]">Nodos</span>
+              <span class="telemetry-num text-[var(--color-text-primary)]">248</span>
+            </div>
+            <div class="flex flex-col gap-0.5 text-right">
+              <span class="label-sm text-[var(--color-text-muted)]">Cobertura</span>
+              <span class="telemetry-num text-[var(--color-text-primary)]">94%</span>
+            </div>
+            <div class="flex flex-col gap-0.5 text-right">
+              <span class="label-sm text-[var(--color-text-muted)]">Latencia</span>
+              <span class="telemetry-num text-[var(--color-text-primary)]">42ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

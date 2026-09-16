@@ -1,0 +1,34 @@
+---
+interface Props {
+  position: "tl" | "tr" | "bl" | "br";
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}
+
+const {
+  position,
+  size = 8,
+  color = "var(--color-text-secondary)",
+  strokeWidth = 1,
+} = Astro.props;
+
+const paths: Record<string, string> = {
+  tl: `M1 ${size} L1 1 L${size} 1`,
+  tr: `M${16 - size} 1 L${15} 1 L${15} ${size}`,
+  bl: `M1 ${16 - size} L1 ${15} L${size} ${15}`,
+  br: `M${16 - size} ${15} L${15} ${15} L${15} ${16 - size}`,
+};
+---
+
+<svg
+  width="16"
+  height="16"
+  viewBox="0 0 16 16"
+  fill="none"
+  stroke={color}
+  stroke-width={strokeWidth}
+  aria-hidden="true"
+>
+  <path d={paths[position]} stroke-linecap="square" />
+</svg>

@@ -1,0 +1,71 @@
+---
+interface Props {
+  label?: string;
+  type?: "text" | "email" | "tel" | "url" | "search" | "password" | "number";
+  name?: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  prefix?: string;
+  suffix?: string;
+  multiline?: boolean;
+  rows?: number;
+  value?: string;
+  class?: string;
+}
+
+const {
+  label,
+  type = "text",
+  name,
+  id,
+  placeholder,
+  required = false,
+  prefix,
+  suffix,
+  multiline = false,
+  rows = 4,
+  value = "",
+  class: className = "",
+} = Astro.props;
+---
+
+<label class={`flex flex-col gap-1.5 ${className}`}>
+  {label && (
+    <span class="label-sm text-[var(--color-text-secondary)]">{label}</span>
+  )}
+  <div
+    class={`flex items-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-sm transition-colors duration-150 focus-within:border-[var(--color-border-active)] focus-within:ring-2 focus-within:ring-[var(--color-sage)]/40 ${multiline ? "p-0 flex-col items-stretch" : "h-10 px-3"}`}
+  >
+    {prefix && !multiline && (
+      <span class="body-sm text-[var(--color-text-secondary)] pr-2 border-r border-[var(--color-border)] mr-2 bg-[var(--color-surface-sunk)] px-1.5 -my-2 flex items-center rounded-xs">
+        {prefix}
+      </span>
+    )}
+    {multiline ? (
+      <textarea
+        name={name}
+        id={id}
+        placeholder={placeholder}
+        required={required}
+        rows={rows}
+        class="w-full bg-transparent px-3 py-2.5 body-md text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none resize-y min-h-24"
+      >{value}</textarea>
+    ) : (
+      <input
+        type={type}
+        name={name}
+        id={id}
+        placeholder={placeholder}
+        required={required}
+        value={value}
+        class="flex-1 bg-transparent body-md text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
+      />
+    )}
+    {suffix && !multiline && (
+      <span class="body-sm text-[var(--color-text-secondary)] pl-2 ml-2 border-l border-[var(--color-border)] bg-[var(--color-surface-sunk)] px-1.5 -my-2 flex items-center rounded-xs">
+        {suffix}
+      </span>
+    )}
+  </div>
+</label>

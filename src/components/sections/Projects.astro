@@ -1,0 +1,162 @@
+---
+import Container from "../layout/Container.astro";
+import SectionHeader from "../layout/SectionHeader.astro";
+import Badge from "../ui/Badge.astro";
+import CornerBracket from "../visuals/CornerBracket.astro";
+import TelemetrySparkline from "../visuals/TelemetrySparkline.astro";
+
+interface Project {
+  code: string;
+  sector: string;
+  title: string;
+  client: string;
+  region: string;
+  duration: string;
+  description: string;
+  metrics: { label: string; value: string; direction: "up" | "down" | "flat" }[];
+  status: "nominal" | "telemetry";
+  progress: number;
+  tags: string[];
+}
+
+const projects: Project[] = [
+  {
+    code: "CASO-04",
+    sector: "Monitoreo glaciar andino",
+    title: "Detección temprana de retroceso glaciar con fusión satelital + LiDAR aerotransportado",
+    client: "Ministerio del Ambiente",
+    region: "Patagonia / Andes",
+    duration: "2024 — 2026",
+    description: "Combinamos datos Sentinel-2, ICEYE SAR y escaneo LiDAR aéreo para producir modelos digitales de superficie con cadencia trimestral.",
+    metrics: [
+      { label: "Precisión altimétrica", value: "±0.18m", direction: "down" },
+      { label: "Cobertura", value: "12,400km²", direction: "up" },
+      { label: "Revisita", value: "12 días", direction: "flat" },
+    ],
+    status: "nominal",
+    progress: 78,
+    tags: ["SAR", "LiDAR", "DEM", "NDVI"],
+  },
+  {
+    code: "CASO-02",
+    sector: "Calidad del aire urbano",
+    title: "Red hiperlocal de sensores de bajo costo con calibración federada",
+    client: "Municipalidad Metropolitana",
+    region: "Zona urbana · 8.4M hab.",
+    duration: "2025 — presente",
+    description: "Implementamos 1,240 nodos PM2.5/NO₂/O₃ calibrados contra estaciones de referencia mediante modelos gaussianos mixtos.",
+    metrics: [
+      { label: "Nodos desplegados", value: "1,240", direction: "up" },
+      { label: "Precisión R²", value: "0.94", direction: "up" },
+      { label: "Costo unitario", value: "$148", direction: "down" },
+    ],
+    status: "telemetry",
+    progress: 92,
+    tags: ["IoT", "ML", "Aire", "Civico"],
+  },
+  {
+    code: "CASO-06",
+    sector: "Deforestación tropical",
+    title: "Pipeline automatizado de detección de cambios con alertas en < 6h",
+    client: "ONG conservación",
+    region: "Cuenca amazónica",
+    duration: "2024 — presente",
+    description: "Sistema near-real-time sobre imágenes PlanetScope y Sentinel-1 con modelos de deep learning entrenados con auditoría humana.",
+    metrics: [
+      { label: "Latencia alerta", value: "4.8h", direction: "down" },
+      { label: "Falsos positivos", value: "2.1%", direction: "down" },
+      { label: "Área vigilada", value: "284k ha", direction: "up" },
+    ],
+    status: "nominal",
+    progress: 100,
+    tags: ["Deep Learning", "Radar", "Alerta", "Bosque"],
+  },
+];
+---
+
+<section id="proyectos" class="relative py-20 md:py-28 bg-[var(--color-surface-container-low)] border-y border-[var(--color-border)]">
+  <Container>
+    <div class="flex flex-col gap-14">
+      <SectionHeader
+        code="CASOS"
+        title="Operaciones en producción con resultados auditables"
+        description="Tres despliegues activos que demuestran el rendimiento de Patsani en condiciones reales: desde la alta atmósfera hasta el dosel de los bosques tropicales."
+      />
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        {projects.map((proj) => (
+          <article class="group relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg flex flex-col hover:border-[var(--color-border-active)] transition-all duration-200 hover:shadow-elevated">
+            <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <CornerBracket position="tr" />
+            </div>
+            <div class="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <CornerBracket position="bl" />
+            </div>
+
+            <header class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)]">
+              <div class="flex items-center gap-3">
+                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">[{proj.code}]</span>
+                <div class="h-3 w-px bg-[var(--color-border)]"></div>
+                <span class="label-sm text-[var(--color-text-secondary)]">{proj.sector}</span>
+              </div>
+              <Badge variant={proj.status} size="sm">
+                {proj.status === "nominal" ? "Activo" : "Live"}
+              </Badge>
+            </header>
+
+            <div class="flex flex-col gap-4 px-6 pt-5 flex-1">
+              <h3 class="font-display font-semibold text-[1.125rem] leading-[1.4] tracking-[-0.01em] text-[var(--color-text-primary)]">
+                {proj.title}
+              </h3>
+              <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
+                {proj.description}
+              </p>
+
+              <dl class="grid grid-cols-3 gap-2 py-3 mt-2">
+                {proj.metrics.map((m) => (
+                  <div class="flex flex-col gap-1 border-l border-[var(--color-border)] first:border-l-0 pl-3 first:pl-0">
+                    <dt class="label-sm text-[var(--color-text-muted)]">{m.label}</dt>
+                    <dd class="telemetry-num text-[var(--color-text-primary)] tabular-nums text-[1rem] flex items-center gap-1">
+                      {m.value}
+                      <span class={`text-[0.625rem] ${m.direction === "down" ? "text-[var(--color-primary-hover)]" : m.direction === "up" ? "text-[var(--color-primary-hover)]" : "text-[var(--color-text-muted)]"}`}>
+                        {m.direction === "up" ? "↑" : m.direction === "down" ? "↓" : "—"}
+                      </span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div class="h-10 -mx-1 mt-1">
+                <TelemetrySparkline variant="primary" data={[42, 48, 45, 52, 49, 55, 58, 62, 65, 68, 72, 75, 78, 82, 85, 88, 92]} />
+              </div>
+            </div>
+
+            <footer class="px-6 py-4 mt-4 border-t border-[var(--color-border)] bg-[var(--color-surface-container-low)]/50 flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <span class="label-sm text-[var(--color-text-muted)]">Progreso</span>
+                <span class="label-sm text-[var(--color-text-primary)] font-medium">{proj.progress}%</span>
+              </div>
+              <div class="h-1 bg-[var(--color-surface-sunk)] rounded-xs overflow-hidden border border-[var(--color-border)]">
+                <div
+                  class="h-full bg-gradient-to-r from-[var(--color-primary-hover)] to-[var(--color-sage)] transition-all duration-1000"
+                  style={`width: ${proj.progress}%`}
+                ></div>
+              </div>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                {proj.tags.map((tag) => (
+                  <span class="label-sm text-[var(--color-text-secondary)] bg-[var(--color-surface-sunk)] border border-[var(--color-border)] px-2 py-0.5 rounded-xs">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div class="flex items-center justify-between pt-2 text-[var(--color-text-muted)]">
+                <span class="label-sm">{proj.client}</span>
+                <span class="label-sm">{proj.duration}</span>
+              </div>
+            </footer>
+          </article>
+        ))}
+      </div>
+    </div>
+  </Container>
+</section>

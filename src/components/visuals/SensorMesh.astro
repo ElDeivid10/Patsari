@@ -1,0 +1,145 @@
+---
+interface Props {
+  variant?: "default" | "sparse" | "dense";
+  animated?: boolean;
+  class?: string;
+}
+
+const { variant = "default", animated = false, class: className = "" } = Astro.props;
+
+const nodeCount =
+  variant === "sparse" ? 12 : variant === "dense" ? 32 : 20;
+
+const nodes = Array.from({ length: nodeCount }, (_, i) => {
+  const angle = (i / nodeCount) * Math.PI * 2;
+  const radius = variant === "sparse" ? 35 : variant === "dense" ? 38 : 36;
+  const jitter = ((i * 7) % 9) - 4;
+  return {
+    x: 50 + Math.cos(angle) * (radius + jitter),
+    y: 50 + Math.sin(angle) * (radius + jitter),
+    type: i % 5,
+  };
+});
+
+const connections = nodes.flatMap((a, i) =>
+  nodes.slice(i + 1).map((b) => {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 26) {
+      return { x1: a.x, y1: a.y, x2: b.x, y2: b.y, dist };
+    }
+    return null;
+  })
+).filter(Boolean);
+---
+
+<div class={`relative w-full aspect-square max-w-md mx-auto ${className}`} aria-hidden="true">
+  <svg
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid meet"
+    class="w-full h-full"
+  >
+    <defs>
+      <radialGradient id="mesh-core" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#b7cd7f" stop-opacity="0.4"></stop>
+        <stop offset="100%" stop-color="#b7cd7f" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+
+    <circle cx="50" cy="50" r="35" fill="url(#mesh-core)"></circle>
+
+    {connections.map((c: any) => (
+      <line
+        x1={c.x1}
+        y1={c.y1}
+        x2={c.x2}
+        y2={c.y2}
+        stroke="#b7cd7f"
+        stroke-width="0.18"
+        stroke-opacity={Math.max(0.2, 0.7 - c.dist / 40)}
+        class={animated ? "anim-dash" : ""}
+      ></line>
+    ))}
+
+    <circle
+      cx="50"
+      cy="50"
+      r="1.4"
+      fill="#283e06"
+    ></circle>
+    <circle
+      cx="50"
+      cy="50"
+      r="3"
+      fill="none"
+      stroke="#283e06"
+      stroke-width="0.25"
+      opacity="0.5"
+    ></circle>
+
+    {nodes.map((n) => (
+      <g>
+        {n.type === 0 && (
+          <circle cx={n.x} cy={n.y} r="0.5" fill="#283e06"></circle>
+        )}
+        {n.type === 1 && (
+          <rect
+            x={n.x - 0.4}
+            y={n.y - 0.4}
+            width="0.8"
+            height="0.8"
+            fill="#3b5110"
+          ></rect>
+        )}
+        {n.type === 2 && (
+          <circle
+            cx={n.x}
+            cy={n.y}
+            r="0.6"
+            fill="none"
+            stroke="#b7cd7f"
+            stroke-width="0.2"
+          ></circle>
+        )}
+        {n.type === 3 && (
+          <>
+            <line
+              x1={n.x - 0.7}
+              y1={n.y}
+              x2={n.x + 0.7}
+              y2={n.y}
+              stroke="#424b3e"
+              stroke-width="0.2"
+            ></line>
+            <line
+              x1={n.x}
+              y1={n.y - 0.7}
+              x2={n.x}
+              y2={n.y + 0.7}
+              stroke="#424b3e"
+              stroke-width="0.2"
+            ></line>
+          </>
+        )}
+        {n.type === 4 && (
+          <circle cx={n.x} cy={n.y} r="0.3" fill="#b7cd7f"></circle>
+        )}
+      </g>
+    ))}
+
+    {nodes.slice(0, 4).map((n, i) => (
+      <circle
+        cx={n.x}
+        cy={n.y}
+        r="1.8"
+        fill="none"
+        stroke="#b7cd7f"
+        stroke-width="0.2"
+        opacity="0.6"
+        class={animated ? "anim-pulse-ring" : ""}
+        style={`animation-delay: ${i * 0.6}s; transform-origin: ${n.x}px ${n.y}px;`}
+      ></circle>
+    ))}
+  </svg>
+</div>

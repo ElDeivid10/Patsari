@@ -1,0 +1,140 @@
+---
+import StatusDot from "./StatusDot.astro";
+import CornerBracket from "../visuals/CornerBracket.astro";
+
+interface Props {
+  label: string;
+  value: string;
+  numericValue?: number;
+  suffix?: string;
+  prefix?: string;
+  decimals?: number;
+  delta?: string;
+  status?: "nominal" | "standby" | "alert";
+  code?: string;
+}
+
+const {
+  label,
+  value,
+  numericValue,
+  suffix,
+  prefix,
+  decimals = 0,
+  delta,
+  status = "nominal",
+  code,
+} = Astro.props;
+---
+
+<div
+  class="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6 flex flex-col gap-5 group hover:border-[var(--color-border-active)] transition-colors duration-200"
+>
+  <div class="absolute top-2.5 right-2.5">
+    <CornerBracket position="tr" />
+  </div>
+  <div class="absolute bottom-2.5 left-2.5">
+    <CornerBracket position="bl" />
+  </div>
+
+  <div class="flex items-center justify-between gap-2">
+    <span class="label-sm text-[var(--color-text-secondary)]">{label}</span>
+    <StatusDot variant={status} size="sm" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <div class="flex items-baseline gap-1">
+      {prefix && <span class="body-lg text-[var(--color-text-secondary)]">{prefix}</span>}
+      <span
+        class="font-display font-semibold text-[2.5rem] leading-none tracking-[-0.03em] text-[var(--color-text-primary)] tabular-nums"
+        data-counter={numericValue}
+        data-decimals={decimals}
+        data-prefix={prefix}
+        data-suffix={suffix}
+      >
+        {value}
+      </span>
+      {suffix && <span class="body-md text-[var(--color-text-secondary)] ml-1">{suffix}</span>}
+    </div>
+    {delta && (
+      <span class="body-sm text-[var(--color-primary-hover)] flex items-center gap-1.5">
+        <span class="text-[0.625rem]">▲</span>
+        {delta}
+      </span>
+    )}
+  </div>
+
+  {code && (
+    <div class="pt-3 border-t border-[var(--color-border)]">
+      <span class="label-sm text-[var(--color-text-muted)]">{code}</span>
+    </div>
+  )}
+</div>
+
+<script>
+  const counters = document.querySelectorAll<HTMLElement>("[data-counter]");
+  const animateCount = (el: HTMLElement) => {
+    const target = Number(el.dataset.counter);
+    if (!Number.isFinite(target)) return;
+    const decimals = Number(el.dataset.decimals ?? 0);
+    const duration = 1600;
+    const start = performance.now();
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const v = target * easeOutCubic(t);
+      const formatted = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString("es-ES");
+      el.textContent = formatted;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  if ("IntersectionObserver" in window) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCount(entry.target as HTMLElement);
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    counters.forEach((el) => obs.observe(el));
+  } else {
+    counters.forEach(animateCount);
+  }
+</script>
+
+<style>
+  .label-sm {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 0.875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .body-sm {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.125rem;
+  }
+  .body-md {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.375rem;
+    letter-spacing: -0.01em;
+  }
+  .body-lg {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+</style>

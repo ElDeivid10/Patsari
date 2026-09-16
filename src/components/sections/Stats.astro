@@ -1,0 +1,93 @@
+---
+import Container from "../layout/Container.astro";
+import SectionHeader from "../layout/SectionHeader.astro";
+import MetricTile from "../ui/MetricTile.astro";
+
+const metrics = [
+  {
+    label: "Sensores activos",
+    value: "248",
+    numericValue: 248,
+    delta: "+12 este mes",
+    status: "nominal" as const,
+    code: "IDX/SENS-001",
+  },
+  {
+    label: "Datos procesados",
+    value: "1.4",
+    numericValue: 1.4,
+    suffix: "TB/h",
+    decimals: 1,
+    delta: "+8.2% vs Q1",
+    status: "nominal" as const,
+    code: "IDX/THR-002",
+  },
+  {
+    label: "Disponibilidad",
+    value: "99.97",
+    numericValue: 99.97,
+    suffix: "%",
+    decimals: 2,
+    delta: "SLA cumplido",
+    status: "nominal" as const,
+    code: "IDX/UPT-003",
+  },
+  {
+    label: "Precisión geoespacial",
+    value: "0.003",
+    numericValue: 0.003,
+    prefix: "±",
+    suffix: "m",
+    decimals: 3,
+    delta: "−12% error",
+    status: "nominal" as const,
+    code: "IDX/PRE-004",
+  },
+];
+---
+
+<section class="relative py-20 md:py-24 bg-[var(--color-surface-container-low)] border-y border-[var(--color-border)]">
+  <Container>
+    <div class="flex flex-col gap-12">
+      <div class="grid lg:grid-cols-12 gap-8 items-end">
+        <div class="lg:col-span-7">
+          <SectionHeader
+            code="KPI-2026"
+            title="Métricas operativas en tiempo real"
+            description="Indicadores verificados contra sistemas de referencia externos (ESA, NOAA, USGS) durante los últimos 90 días."
+          />
+        </div>
+        <div class="lg:col-span-5 flex flex-col gap-2">
+          <div class="flex items-center justify-end gap-2">
+            <span class="label-sm text-[var(--color-text-muted)]">Última sincronización</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">14:32:08 UTC</span>
+          </div>
+          <div class="flex items-center justify-end gap-2">
+            <span class="label-sm text-[var(--color-text-muted)]">Próxima pasada</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">SAT-04 en 04:12</span>
+          </div>
+          <div class="flex items-center justify-end gap-2">
+            <span class="label-sm text-[var(--color-text-muted)]">Ventana de mantenimiento</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">03 — 05 mayo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {metrics.map((m) => (
+          <MetricTile
+            label={m.label}
+            value={m.value}
+            numericValue={m.numericValue}
+            decimals={m.decimals}
+            suffix={m.suffix}
+            prefix={m.prefix}
+            delta={m.delta}
+            status={m.status}
+            code={m.code}
+          />
+        ))}
+      </div>
+    </div>
+  </Container>
+</section>

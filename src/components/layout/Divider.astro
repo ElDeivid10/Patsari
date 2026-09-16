@@ -1,0 +1,16 @@
+---
+interface Props {
+  variant?: "horizontal" | "vertical";
+  class?: string;
+}
+
+const { variant = "horizontal", class: className = "" } = Astro.props;
+
+const baseClasses = variant === "horizontal" ? "h-px w-full" : "w-px h-full";
+---
+
+<div
+  class={`bg-[var(--color-border)] ${baseClasses} ${className}`}
+  role="separator"
+  aria-orientation={variant}
+></div>

@@ -1,0 +1,127 @@
+---
+import Container from "../layout/Container.astro";
+import CoordinateBreadcrumb from "../ui/CoordinateBreadcrumb.astro";
+import StatusDot from "../ui/StatusDot.astro";
+
+const columns = [
+  {
+    title: "Producto",
+    links: [
+      { label: "Capacidades", href: "#capacidades" },
+      { label: "Casos de estudio", href: "#proyectos" },
+      { label: "Tecnología", href: "#tecnologia" },
+      { label: "Hoja técnica", href: "#" },
+      { label: "Documentación API", href: "#" },
+    ],
+  },
+  {
+    title: "Compañía",
+    links: [
+      { label: "Misión", href: "#mision" },
+      { label: "Equipo", href: "#" },
+      { label: "Carreras · 6 vacantes", href: "#" },
+      { label: "Sala de prensa", href: "#" },
+      { label: "Política de datos", href: "#" },
+    ],
+  },
+  {
+    title: "Recursos",
+    links: [
+      { label: "Catálogo STAC público", href: "#" },
+      { label: "Notas de lanzamiento", href: "#" },
+      { label: "Reportes trimestrales", href: "#" },
+      { label: "Investigación abierta", href: "#" },
+      { label: "Estado del servicio", href: "#" },
+    ],
+  },
+];
+
+const regions = [
+  { code: "MX", city: "Ciudad de México", role: "HQ · NOC primario" },
+  { code: "CL", city: "Santiago", role: "NOC secundario" },
+  { code: "EU", role: "Outpost · Frankfurt", city: "Solo lectura" },
+];
+---
+
+<footer class="relative bg-[var(--color-text-primary)] text-[var(--color-surface)] py-16 md:py-20">
+  <Container>
+    <div class="flex flex-col gap-14">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-12">
+        <div class="lg:col-span-6 flex flex-col gap-6">
+          <a href="/" class="flex items-center gap-3">
+            <svg viewBox="0 0 28 28" class="w-8 h-8">
+              <circle cx="14" cy="14" r="13" fill="none" stroke="#b7cd7f" stroke-width="1.5"></circle>
+              <ellipse cx="14" cy="14" rx="13" ry="5" fill="none" stroke="#b7cd7f" stroke-width="1" opacity="0.7"></ellipse>
+              <circle cx="14" cy="14" r="3" fill="#b7cd7f"></circle>
+              <circle cx="24" cy="14" r="1.5" fill="#f8faf5"></circle>
+            </svg>
+            <div class="flex flex-col leading-none">
+              <span class="font-display font-bold text-[1.25rem] tracking-[-0.02em] text-[var(--color-surface)]">
+                Patsani
+              </span>
+              <span class="label-sm text-[var(--color-sage)] mt-1">EARTH-OS // 2026</span>
+            </div>
+          </a>
+
+          <p class="body-md text-[var(--color-sage)]/80 leading-relaxed max-w-xs">
+            Instrumentación orbital para el monitoreo terrestre. Operamos en dos continentes con redundancia N+2 y datos abiertos por defecto.
+          </p>
+
+          <div class="flex flex-col gap-2">
+            {regions.map((r) => (
+              <div class="flex items-center gap-3 py-1.5">
+                <span class="font-mono text-[0.6875rem] font-semibold tracking-[0.1em] text-[var(--color-sage)] border border-[var(--color-sage)]/40 px-2 py-0.5 rounded-xs">
+                  {r.code}
+                </span>
+                <span class="body-sm text-[var(--color-surface)] font-medium">{r.city}</span>
+                <span class="text-[var(--color-sage)]/60">·</span>
+                <span class="body-sm text-[var(--color-sage)]/80">{r.role}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {columns.map((col) => (
+          <div class="lg:col-span-2 flex flex-col gap-4">
+            <h4 class="font-mono text-[0.6875rem] font-semibold tracking-[0.1em] uppercase text-[var(--color-sage)]">
+              {col.title}
+            </h4>
+            <ul class="flex flex-col gap-2.5">
+              {col.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class="body-sm text-[var(--color-surface)]/80 hover:text-[var(--color-sage)] transition-colors duration-150"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-6 pt-8 border-t border-[var(--color-sage)]/20">
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex items-center gap-2">
+            <StatusDot variant="telemetry" size="sm" pulse />
+            <span class="label-sm text-[var(--color-sage)]">SISTEMAS OPERATIVOS</span>
+          </div>
+          <div class="h-3 w-px bg-[var(--color-sage)]/30"></div>
+          <span class="label-sm text-[var(--color-sage)]/80">© 2026 Patsani Systems S.A.P.I.</span>
+          <span class="label-sm text-[var(--color-sage)]/60">·</span>
+          <span class="label-sm text-[var(--color-sage)]/80">RFC PTA260412KX9</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <CoordinateBreadcrumb
+            segments={["PATSANI", "EARTH-OS", "v2.6.1", "BUILD-2026.04.14"]}
+            variant="inverse"
+            size="md"
+          />
+        </div>
+      </div>
+    </div>
+  </Container>
+</footer>

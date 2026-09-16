@@ -1,0 +1,41 @@
+---
+interface Props {
+  code?: string;
+  title: string;
+  description?: string;
+  align?: "left" | "center";
+  class?: string;
+  id?: string;
+}
+
+const {
+  code,
+  title,
+  description,
+  align = "left",
+  class: className = "",
+  id,
+} = Astro.props;
+---
+
+<header
+  id={id}
+  class={`flex flex-col gap-6 ${align === "center" ? "items-center text-center" : "items-start"} ${className}`}
+>
+  {code && (
+    <div class="flex items-center gap-3">
+      <span class="label-sm text-[var(--color-text-secondary)] tracking-[0.12em]">[{code}]</span>
+      <div class="h-px w-12 bg-[var(--color-border)]"></div>
+    </div>
+  )}
+
+  <h2 class="headline-lg md:text-[2.25rem] md:leading-[2.5rem] text-[var(--color-text-primary)] max-w-3xl">
+    {title}
+  </h2>
+
+  {description && (
+    <p class={`body-lg text-[var(--color-text-secondary)] max-w-2xl ${align === "center" ? "mx-auto" : ""}`}>
+      {description}
+    </p>
+  )}
+</header>

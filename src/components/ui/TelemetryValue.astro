@@ -1,0 +1,51 @@
+---
+interface Props {
+  label: string;
+  value: string;
+  unit?: string;
+  delta?: string;
+  deltaDirection?: "up" | "down" | "flat";
+  variant?: "default" | "inverted";
+}
+
+const {
+  label,
+  value,
+  unit,
+  delta,
+  deltaDirection = "up",
+  variant = "default",
+} = Astro.props;
+
+const labelColor =
+  variant === "inverted"
+    ? "text-[var(--color-sage)]"
+    : "text-[var(--color-text-secondary)]";
+const valueColor =
+  variant === "inverted"
+    ? "text-[var(--color-surface)]"
+    : "text-[var(--color-text-primary)]";
+
+const deltaIcon =
+  deltaDirection === "up" ? "▲" : deltaDirection === "down" ? "▼" : "—";
+const deltaColor =
+  deltaDirection === "down"
+    ? "text-[var(--color-error)]"
+    : "text-[var(--color-primary-hover)]";
+---
+
+<div class="flex flex-col gap-1.5">
+  <span class={`label-sm ${labelColor}`}>{label}</span>
+  <div class="flex items-baseline gap-1.5">
+    <span class={`telemetry-num ${valueColor}`}>{value}</span>
+    {unit && (
+      <span class={`body-sm ${labelColor}`}>{unit}</span>
+    )}
+  </div>
+  {delta && (
+    <span class={`body-sm font-mono ${deltaColor} flex items-center gap-1`}>
+      <span class="text-[0.625rem]">{deltaIcon}</span>
+      {delta}
+    </span>
+  )}
+</div>

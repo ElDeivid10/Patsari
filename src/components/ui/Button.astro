@@ -1,0 +1,48 @@
+---
+interface Props {
+  variant?: "primary" | "secondary" | "destructive" | "ghost";
+  size?: "sm" | "md" | "lg";
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  class?: string;
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  href,
+  type = "button",
+  class: className = "",
+} = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: "h-9 px-3 text-[0.6875rem]",
+  md: "h-10 px-4 text-[0.75rem]",
+  lg: "h-12 px-6 text-[0.8125rem]",
+};
+
+const variantClasses: Record<string, string> = {
+  primary:
+    "bg-[var(--color-primary)] text-[var(--color-surface)] border border-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] hover:border-[var(--color-primary-hover)]",
+  secondary:
+    "bg-[var(--color-surface)] text-[var(--color-text-primary)] border border-[var(--color-border)] hover:border-[var(--color-border-active)] hover:bg-[var(--color-surface-sunk)]",
+  destructive:
+    "bg-[var(--color-error-bg)] text-[var(--color-error)] border border-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-[var(--color-surface)]",
+  ghost:
+    "bg-transparent text-[var(--color-text-primary)] border border-transparent hover:bg-[var(--color-surface-sunk)]",
+};
+
+const baseClasses = `inline-flex items-center justify-center gap-2 font-mono font-medium uppercase tracking-[0.06em] rounded-sm transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-sage)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)] disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} class={baseClasses}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class={baseClasses}>
+      <slot />
+    </button>
+  )
+}

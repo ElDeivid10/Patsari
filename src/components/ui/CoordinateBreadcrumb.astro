@@ -1,0 +1,33 @@
+---
+interface Props {
+  segments: string[];
+  variant?: "default" | "inverse";
+  size?: "sm" | "md";
+}
+
+const { segments, variant = "default", size = "sm" } = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: "text-[0.6875rem] gap-1.5",
+  md: "text-[0.75rem] gap-2",
+};
+
+const colorClasses =
+  variant === "inverse"
+    ? "text-[var(--color-sage)]"
+    : "text-[var(--color-text-secondary)]";
+---
+
+<nav
+  class={`flex items-center font-mono font-medium uppercase tracking-[0.08em] flex-wrap ${sizeClasses[size]} ${colorClasses}`}
+  aria-label="Ruta de coordenadas"
+>
+  {segments.map((seg, i) => (
+    <>
+      {i > 0 && <span class="text-[var(--color-sage)]">/</span>}
+      <span class={i === segments.length - 1 ? "text-[var(--color-text-primary)]" : ""}>
+        {seg}
+      </span>
+    </>
+  ))}
+</nav>

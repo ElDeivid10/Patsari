@@ -1,0 +1,49 @@
+---
+interface Props {
+  segments: string[];
+  variant?: "default" | "sage";
+  label?: string;
+}
+
+const { segments, variant = "default", label } = Astro.props;
+
+const total = segments.length;
+const segmentColors =
+  variant === "sage"
+    ? ["bg-[var(--color-sage)]", "bg-[var(--color-sage-dim)]", "bg-[var(--color-primary-hover)]", "bg-[var(--color-text-muted)]"]
+    : [
+        "bg-[var(--color-primary-hover)]",
+        "bg-[var(--color-primary)]",
+        "bg-[var(--color-sage)]",
+        "bg-[var(--color-surface-sunk)]",
+      ];
+---
+
+<div class="flex flex-col gap-2">
+  {label && (
+    <div class="flex items-center justify-between">
+      <span class="label-sm text-[var(--color-text-secondary)]">{label}</span>
+      <span class="label-sm text-[var(--color-text-muted)]">{total} segments</span>
+    </div>
+  )}
+  <div class="flex w-full h-1.5 bg-[var(--color-surface-sunk)] rounded-xs overflow-hidden border border-[var(--color-border)]">
+    {segments.map((seg, i) => {
+      const widthPct = Math.max(10, Math.min(45, 100 / total + ((i * 7) % 20) - 5));
+      return (
+        <div
+          class={`${segmentColors[i % segmentColors.length]} transition-all`}
+          style={`width: ${widthPct}%`}
+          title={seg}
+        ></div>
+      );
+    })}
+  </div>
+  <div class="flex flex-wrap gap-x-3 gap-y-1">
+    {segments.map((seg, i) => (
+      <span class="label-sm text-[var(--color-text-muted)] flex items-center gap-1.5">
+        <span class={`inline-block w-2 h-2 rounded-xs ${segmentColors[i % segmentColors.length]}`}></span>
+        {seg}
+      </span>
+    ))}
+  </div>
+</div>

@@ -1,0 +1,34 @@
+---
+interface Props {
+  variant?: "nominal" | "standby" | "telemetry" | "alert";
+  size?: "sm" | "md" | "lg";
+  pulse?: boolean;
+  ring?: boolean;
+}
+
+const { variant = "nominal", size = "md", pulse = false, ring = false } = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: "w-1.5 h-1.5",
+  md: "w-2 h-2",
+  lg: "w-2.5 h-2.5",
+};
+
+const colorClasses: Record<string, string> = {
+  nominal: "bg-[var(--color-primary-hover)]",
+  standby: "bg-[var(--color-text-muted)]",
+  telemetry: "bg-[var(--color-sage)]",
+  alert: "bg-[var(--color-error)]",
+};
+---
+
+<span class="relative inline-flex items-center justify-center">
+  <span
+    class={`rounded-full ${sizeClasses[size]} ${colorClasses[variant]} ${pulse ? "anim-pulse-dot" : ""}`}
+  ></span>
+  {ring && (
+    <span
+      class={`absolute inset-0 rounded-full ${colorClasses[variant]} anim-pulse-ring`}
+    ></span>
+  )}
+</span>

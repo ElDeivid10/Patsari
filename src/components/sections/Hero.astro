@@ -1,0 +1,110 @@
+---
+import Button from "../ui/Button.astro";
+import Badge from "../ui/Badge.astro";
+import Container from "../layout/Container.astro";
+import OrbitalVisualization from "../visuals/OrbitalVisualization.astro";
+import GridPattern from "../visuals/GridPattern.astro";
+import CornerBracket from "../visuals/CornerBracket.astro";
+---
+
+<section class="relative pt-12 pb-20 md:pt-20 md:pb-28 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <GridPattern size={48} opacity={0.45} />
+  </div>
+
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent"></div>
+
+  <Container>
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <div class="lg:col-span-7 flex flex-col gap-7">
+        <div class="flex items-center gap-3 flex-wrap">
+          <Badge variant="nominal" withDot>Sistema operativo</Badge>
+          <span class="label-sm text-[var(--color-text-muted)]">v2.6 · Lanzamiento 14.04</span>
+        </div>
+
+        <h1 class="font-display font-bold text-[2.5rem] md:text-[3.25rem] md:leading-[3.4rem] lg:text-[3.75rem] lg:leading-[3.8rem] tracking-[-0.035em] text-[var(--color-text-primary)]">
+          Instrumentación orbital para el
+          <span class="relative inline-block">
+            <span class="relative z-10">monitoreo terrestre</span>
+            <span class="absolute bottom-1.5 left-0 right-0 h-2.5 bg-[var(--color-sage)]/40 -z-0"></span>
+          </span>
+        </h1>
+
+        <p class="body-lg text-[var(--color-text-secondary)] max-w-xl">
+          Una plataforma unificada de sensores geoespaciales, telemetría atmosférica y procesamiento de señales para equipos científicos, agencias ambientales y operadores de misiones.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <Button variant="primary" size="lg" href="#contacto">
+            <span>Solicitar acceso</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></path>
+            </svg>
+          </Button>
+          <Button variant="secondary" size="lg" href="#capacidades">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <polygon points="3,2 12,7 3,12" fill="currentColor"></polygon>
+            </svg>
+            <span>Ver demostración</span>
+          </Button>
+        </div>
+
+        <div class="flex flex-wrap items-stretch gap-0 mt-2 border border-[var(--color-border)] rounded-lg overflow-hidden bg-[var(--color-surface)]">
+          <div class="flex items-center gap-3 px-4 py-3 border-r border-[var(--color-border)] flex-1 min-w-[200px]">
+            <div class="flex flex-col gap-1 flex-1">
+              <span class="label-sm text-[var(--color-text-secondary)]">Orbita activa</span>
+              <span class="telemetry-num text-[var(--color-text-primary)] tabular-nums">SAT-04 // 547 km</span>
+            </div>
+            <Badge variant="telemetry" size="sm">LIVE</Badge>
+          </div>
+          <div class="flex items-center gap-3 px-4 py-3 border-r border-[var(--color-border)] flex-1 min-w-[200px]">
+            <div class="flex flex-col gap-1 flex-1">
+              <span class="label-sm text-[var(--color-text-secondary)]">Sensores en red</span>
+              <span class="telemetry-num text-[var(--color-text-primary)] tabular-nums">248 unidades</span>
+            </div>
+            <Badge variant="nominal" size="sm" withDot>OK</Badge>
+          </div>
+          <div class="flex items-center gap-3 px-4 py-3 flex-1 min-w-[200px]">
+            <div class="flex flex-col gap-1 flex-1">
+              <span class="label-sm text-[var(--color-text-secondary)]">Carga útil</span>
+              <span class="telemetry-num text-[var(--color-text-primary)] tabular-nums">SPEC-B / 4 bandas</span>
+            </div>
+            <Badge variant="standby" size="sm">STBY</Badge>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 relative">
+        <div class="absolute -top-4 -right-4 z-10">
+          <div class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-sm px-3 py-2 flex items-center gap-2 shadow-elevated">
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-hover)] anim-pulse-dot"></div>
+            <span class="label-sm text-[var(--color-text-secondary)]">PAYLOAD ORBIT-04</span>
+          </div>
+        </div>
+        <div class="absolute -bottom-3 -left-3 z-10 hidden md:block">
+          <div class="bg-[var(--color-text-primary)] border border-[var(--color-text-primary)] rounded-sm px-3 py-2 flex items-center gap-2 shadow-elevated">
+            <span class="label-sm text-[var(--color-sage)] font-mono">ID</span>
+            <span class="label-sm text-[var(--color-surface)] font-mono">PAT-2026-A4</span>
+          </div>
+        </div>
+
+        <div class="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6 md:p-8 shadow-elevated">
+          <div class="absolute top-2.5 left-2.5">
+            <CornerBracket position="tl" />
+          </div>
+          <div class="absolute top-2.5 right-2.5">
+            <CornerBracket position="tr" />
+          </div>
+          <div class="absolute bottom-2.5 left-2.5">
+            <CornerBracket position="bl" />
+          </div>
+          <div class="absolute bottom-2.5 right-2.5">
+            <CornerBracket position="br" />
+          </div>
+
+          <OrbitalVisualization variant="hero" />
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

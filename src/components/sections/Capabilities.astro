@@ -1,0 +1,122 @@
+---
+import Badge from "../ui/Badge.astro";
+import Container from "../layout/Container.astro";
+import SectionHeader from "../layout/SectionHeader.astro";
+import CornerBracket from "../visuals/CornerBracket.astro";
+import TelemetrySparkline from "../visuals/TelemetrySparkline.astro";
+
+interface Capability {
+  code: string;
+  title: string;
+  description: string;
+  status: "nominal" | "standby" | "telemetry";
+  metric: string;
+  sparkData?: number[];
+}
+
+const capabilities: Capability[] = [
+  {
+    code: "01",
+    title: "Monitoreo orbital",
+    description: "Seguimiento continuo de plataformas satelitales LEO y MEO con corrección orbital sub-métrica y telemetría cifrada.",
+    status: "nominal",
+    metric: "247 objetos rastreados",
+    sparkData: [22, 28, 24, 31, 28, 35, 32, 38, 36, 42, 39, 46, 44, 51, 48, 55, 52],
+  },
+  {
+    code: "02",
+    title: "Sensores geoespaciales",
+    description: "Red distribuida de estaciones GNSS, LiDAR y cámaras multiespectrales con sincronización PTP a 0.5ms.",
+    status: "nominal",
+    metric: "248 nodos activos",
+    sparkData: [38, 35, 42, 39, 45, 42, 48, 46, 52, 49, 55, 53, 58, 55, 62, 59, 65],
+  },
+  {
+    code: "03",
+    title: "Telemetría atmosférica",
+    description: "Lectura continua de presión, temperatura, humedad, aerosoles y compuestos traza con calibración in-situ.",
+    status: "telemetry",
+    metric: "1.2M lecturas/h",
+    sparkData: [12, 15, 18, 22, 19, 25, 28, 32, 29, 35, 38, 42, 39, 45, 48, 52, 49],
+  },
+  {
+    code: "04",
+    title: "Análisis espectral",
+    description: "Procesamiento de firmas espectrales en bandas UV, visible, NIR y SWIR para clasificación de cobertura.",
+    status: "nominal",
+    metric: "12 bandas procesadas",
+    sparkData: [45, 42, 48, 52, 49, 55, 58, 62, 59, 65, 68, 72, 69, 75, 78, 82, 79],
+  },
+  {
+    code: "05",
+    title: "Procesamiento de señales",
+    description: "Pipeline FPGA-accelerated para filtrado, demodulación y decodificación de señales satelitales en banda S/X.",
+    status: "standby",
+    metric: "8.4 GB/s throughput",
+    sparkData: [28, 32, 29, 35, 38, 34, 41, 38, 44, 42, 48, 45, 51, 48, 54, 52, 58],
+  },
+  {
+    code: "06",
+    title: "Sistemas de misión",
+    description: "Planificación, secuenciado y control de operaciones multi-satélite con redundancia N+2 y failover < 800ms.",
+    status: "nominal",
+    metric: "99.97% uptime",
+    sparkData: [88, 89, 91, 92, 94, 93, 95, 96, 97, 96, 98, 97, 99, 98, 99, 99, 99],
+  },
+];
+---
+
+<section id="capacidades" class="relative py-20 md:py-28 border-t border-[var(--color-border)]">
+  <Container>
+    <div class="flex flex-col gap-14">
+      <SectionHeader
+        code="CAP-001"
+        title="Capacidades operativas para el monitoreo continuo de la Tierra"
+        description="Seis módulos instrumentales que cubren el ciclo completo de captura, transmisión, procesamiento y diseminación de datos geoespaciales y atmosféricos."
+      />
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+        {capabilities.map((cap) => (
+          <article
+            class="group relative bg-[var(--color-surface)] p-7 flex flex-col gap-5 hover:bg-[var(--color-surface-sunk)] transition-colors duration-200"
+          >
+            <div class="absolute top-3 right-3">
+              <CornerBracket position="tr" />
+            </div>
+            <div class="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <CornerBracket position="bl" />
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">
+                [{cap.code}]
+              </span>
+              <Badge variant={cap.status} size="sm">
+                {cap.status === "nominal" ? "Operativo" : cap.status === "telemetry" ? "Live" : "Calibración"}
+              </Badge>
+            </div>
+
+            <div class="flex flex-col gap-2 flex-1">
+              <h3 class="font-display font-semibold text-[1.25rem] leading-tight tracking-[-0.01em] text-[var(--color-text-primary)]">
+                {cap.title}
+              </h3>
+              <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
+                {cap.description}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-[var(--color-border)] flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <span class="label-sm text-[var(--color-text-secondary)]">Estado actual</span>
+                <span class="label-sm text-[var(--color-text-primary)] font-medium">{cap.metric}</span>
+              </div>
+              <div class="h-7 -mx-1">
+                {cap.sparkData && <TelemetrySparkline data={cap.sparkData} variant="sage" />}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </Container>
+</section>

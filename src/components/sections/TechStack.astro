@@ -1,0 +1,116 @@
+---
+import Container from "../layout/Container.astro";
+import SectionHeader from "../layout/SectionHeader.astro";
+import Badge from "../ui/Badge.astro";
+
+interface TechGroup {
+  breadcrumb: string[];
+  items: { name: string; role: string; version?: string }[];
+}
+
+const stack: TechGroup[] = [
+  {
+    breadcrumb: ["ORBIT", "PAYLOAD"],
+    items: [
+      { name: "GNSS-RTK", role: "Posicionamiento", version: "v3.4" },
+      { name: "LiDAR", role: "Topografía", version: "32 canales" },
+      { name: "SAR-X", role: "Radar apertura", version: "10GHz" },
+      { name: "Hyperion", role: "Espectrómetro", version: "220 bandas" },
+    ],
+  },
+  {
+    breadcrumb: ["GROUND", "PROCESSING"],
+    items: [
+      { name: "FPGA Array", role: "Filtrado", version: "Stratix 10" },
+      { name: "CUDA Mesh", role: "GPU compute", version: "H100×8" },
+      { name: "InfluxDB", role: "Time-series", version: "v2.7" },
+      { name: "Apache Arrow", role: "Data plane", version: "v14" },
+    ],
+  },
+  {
+    breadcrumb: ["DATA", "ANALYTICS"],
+    items: [
+      { name: "Pyro / PPL", role: "Probabilistic", version: "v1.9" },
+      { name: "xarray", role: "N-d arrays", version: "2024.10" },
+      { name: "DGL-KE", role: "Knowledge graphs", version: "v0.4" },
+      { name: "STAC API", role: "Catálogo", version: "v1.1" },
+    ],
+  },
+  {
+    breadcrumb: ["OPS", "COMMS"],
+    items: [
+      { name: "CCSDS 131", role: "TM/TC", version: "stack" },
+      { name: "Yamcs", role: "Mission ctrl", version: "v5.8" },
+      { name: "OpenC3", role: "Cosmos ext.", version: "v5" },
+      { name: "Sigstore", role: "Supply chain", version: "v0.6" },
+    ],
+  },
+];
+---
+
+<section id="tecnologia" class="relative py-20 md:py-28 border-t border-[var(--color-border)]">
+  <Container>
+    <div class="flex flex-col gap-14">
+      <div class="grid lg:grid-cols-12 gap-8 items-end">
+        <div class="lg:col-span-7">
+          <SectionHeader
+            code="STACK"
+            title="Una pila tecnológica diseñada para la confiabilidad operativa"
+            description="Cada capa está seleccionada por su madurez en entornos aeroespaciales y su capacidad de operar bajo restricciones estrictas de cómputo, energía y ancho de banda."
+          />
+        </div>
+        <div class="lg:col-span-5 flex flex-wrap gap-2 lg:justify-end">
+          <Badge variant="nominal" withDot>Reproducible</Badge>
+          <Badge variant="nominal" withDot>Open source core</Badge>
+          <Badge variant="telemetry" size="md">SOC2 / ITAR-ready</Badge>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+        {stack.map((group) => (
+          <div class="bg-[var(--color-surface)] flex flex-col">
+            <header class="flex items-center gap-2 px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-container-low)]">
+              {group.breadcrumb.map((seg, i) => (
+                <>
+                  {i > 0 && <span class="text-[var(--color-sage)] font-mono text-[0.6875rem]">/</span>}
+                  <span class={`font-mono text-[0.6875rem] font-semibold tracking-[0.1em] uppercase ${i === group.breadcrumb.length - 1 ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)]"}`}>
+                    {seg}
+                  </span>
+                </>
+              ))}
+            </header>
+            <ul class="flex flex-col">
+              {group.items.map((item) => (
+                <li class="group/item flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-surface-sunk)] transition-colors duration-150">
+                  <div class="flex flex-col gap-0.5 min-w-0">
+                    <span class="font-mono font-medium text-[0.8125rem] text-[var(--color-text-primary)] truncate">
+                      {item.name}
+                    </span>
+                    <span class="body-sm text-[var(--color-text-muted)] truncate">{item.role}</span>
+                  </div>
+                  {item.version && (
+                    <span class="label-sm text-[var(--color-sage)] font-mono whitespace-nowrap pl-3">
+                      {item.version}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[var(--color-border)] mt-2">
+        <span class="label-sm text-[var(--color-text-muted)]">Build reproducible · SHA-256 verificado · Container registry privado</span>
+        <div class="flex items-center gap-2">
+          <span class="label-sm text-[var(--color-text-secondary)]">Pipeline</span>
+          <span class="label-sm text-[var(--color-primary-hover)] font-medium">CI / CD</span>
+          <span class="text-[var(--color-border)]">→</span>
+          <span class="label-sm text-[var(--color-primary-hover)] font-medium">Staging</span>
+          <span class="text-[var(--color-border)]">→</span>
+          <span class="label-sm text-[var(--color-primary-hover)] font-medium">Producción</span>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
