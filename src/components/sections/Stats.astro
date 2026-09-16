@@ -5,43 +5,38 @@ import MetricTile from "../ui/MetricTile.astro";
 
 const metrics = [
   {
-    label: "Sensores activos",
-    value: "248",
-    numericValue: 248,
-    delta: "+12 este mes",
-    status: "nominal" as const,
-    code: "IDX/SENS-001",
-  },
-  {
-    label: "Datos procesados",
-    value: "1.4",
-    numericValue: 1.4,
-    suffix: "TB/h",
-    decimals: 1,
-    delta: "+8.2% vs Q1",
-    status: "nominal" as const,
-    code: "IDX/THR-002",
-  },
-  {
-    label: "Disponibilidad",
-    value: "99.97",
-    numericValue: 99.97,
-    suffix: "%",
+    label: "Frecuencia de transmisión",
+    value: "1.00",
+    numericValue: 1,
+    suffix: "Hz",
     decimals: 2,
-    delta: "SLA cumplido",
+    delta: "Estable · millis()",
     status: "nominal" as const,
-    code: "IDX/UPT-003",
+    code: "SPEC/TX-001",
   },
   {
-    label: "Precisión geoespacial",
-    value: "0.003",
-    numericValue: 0.003,
-    prefix: "±",
-    suffix: "m",
-    decimals: 3,
-    delta: "−12% error",
+    label: "Campos por paquete",
+    value: "21",
+    numericValue: 21,
+    delta: "10 obligatorios + 11 secundarios",
     status: "nominal" as const,
-    code: "IDX/PRE-004",
+    code: "SPEC/FRM-002",
+  },
+  {
+    label: "Sensores activos",
+    value: "4",
+    numericValue: 4,
+    delta: "BNO085 · BME688 · GPS · VBat",
+    status: "nominal" as const,
+    code: "SPEC/SNS-003",
+  },
+  {
+    label: "Buses compartidos",
+    value: "2",
+    numericValue: 2,
+    delta: "I²C + SPI multiplexado",
+    status: "nominal" as const,
+    code: "SPEC/BUS-004",
   },
 ];
 ---
@@ -52,23 +47,23 @@ const metrics = [
       <div class="grid lg:grid-cols-12 gap-8 items-end">
         <div class="lg:col-span-7">
           <SectionHeader
-            code="KPI-2026"
-            title="Métricas operativas en tiempo real"
-            description="Indicadores verificados contra sistemas de referencia externos (ESA, NOAA, USGS) durante los últimos 90 días."
+            code="ESPECIFICACIÓN"
+            title="Parámetros verificados del prototipo PROBE-01"
+            description="Estos valores se verifican en banco antes de cada campaña de vuelo contra el manual de requisitos. Cualquier desviación invalida el pase de integración."
           />
         </div>
         <div class="lg:col-span-5 flex flex-col gap-2">
           <div class="flex items-center justify-end gap-2">
-            <span class="label-sm text-[var(--color-text-muted)]">Última sincronización</span>
-            <span class="label-sm text-[var(--color-text-primary)] font-medium">14:32:08 UTC</span>
+            <span class="label-sm text-[var(--color-text-muted)]">Build</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">v1.0 · 2026-04-14</span>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <span class="label-sm text-[var(--color-text-muted)]">Próxima pasada</span>
-            <span class="label-sm text-[var(--color-text-primary)] font-medium">SAT-04 en 04:12</span>
+            <span class="label-sm text-[var(--color-text-muted)]">TEAM_ID</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">0001</span>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <span class="label-sm text-[var(--color-text-muted)]">Ventana de mantenimiento</span>
-            <span class="label-sm text-[var(--color-text-primary)] font-medium">03 — 05 mayo</span>
+            <span class="label-sm text-[var(--color-text-muted)]">Estado de integración</span>
+            <span class="label-sm text-[var(--color-primary-hover)] font-medium">WAIT · listo para vuelo</span>
           </div>
         </div>
       </div>
@@ -81,7 +76,6 @@ const metrics = [
             numericValue={m.numericValue}
             decimals={m.decimals}
             suffix={m.suffix}
-            prefix={m.prefix}
             delta={m.delta}
             status={m.status}
             code={m.code}

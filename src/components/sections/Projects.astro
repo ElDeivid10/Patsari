@@ -21,55 +21,55 @@ interface Project {
 
 const projects: Project[] = [
   {
-    code: "CASO-04",
-    sector: "Monitoreo glaciar andino",
-    title: "Detección temprana de retroceso glaciar con fusión satelital + LiDAR aerotransportado",
-    client: "Ministerio del Ambiente",
-    region: "Patagonia / Andes",
-    duration: "2024 — 2026",
-    description: "Combinamos datos Sentinel-2, ICEYE SAR y escaneo LiDAR aéreo para producir modelos digitales de superficie con cadencia trimestral.",
+    code: "TEST-04",
+    sector: "Integración de hardware",
+    title: "Soldadura y verificación de buses I²C + SPI en PROBE-01",
+    client: "Bench interno",
+    region: "Lab · CDMX",
+    duration: "2026-03-08 → 03-22",
+    description: "Soldamos los seis módulos sobre placa prototipo, verificamos direccionamiento I²C con scanner, continuidad de SPI compartido entre LoRa y SD, y respuesta de cada pin con multímetro y osciloscopio.",
     metrics: [
-      { label: "Precisión altimétrica", value: "±0.18m", direction: "down" },
-      { label: "Cobertura", value: "12,400km²", direction: "up" },
-      { label: "Revisita", value: "12 días", direction: "flat" },
-    ],
-    status: "nominal",
-    progress: 78,
-    tags: ["SAR", "LiDAR", "DEM", "NDVI"],
-  },
-  {
-    code: "CASO-02",
-    sector: "Calidad del aire urbano",
-    title: "Red hiperlocal de sensores de bajo costo con calibración federada",
-    client: "Municipalidad Metropolitana",
-    region: "Zona urbana · 8.4M hab.",
-    duration: "2025 — presente",
-    description: "Implementamos 1,240 nodos PM2.5/NO₂/O₃ calibrados contra estaciones de referencia mediante modelos gaussianos mixtos.",
-    metrics: [
-      { label: "Nodos desplegados", value: "1,240", direction: "up" },
-      { label: "Precisión R²", value: "0.94", direction: "up" },
-      { label: "Costo unitario", value: "$148", direction: "down" },
-    ],
-    status: "telemetry",
-    progress: 92,
-    tags: ["IoT", "ML", "Aire", "Civico"],
-  },
-  {
-    code: "CASO-06",
-    sector: "Deforestación tropical",
-    title: "Pipeline automatizado de detección de cambios con alertas en < 6h",
-    client: "ONG conservación",
-    region: "Cuenca amazónica",
-    duration: "2024 — presente",
-    description: "Sistema near-real-time sobre imágenes PlanetScope y Sentinel-1 con modelos de deep learning entrenados con auditoría humana.",
-    metrics: [
-      { label: "Latencia alerta", value: "4.8h", direction: "down" },
-      { label: "Falsos positivos", value: "2.1%", direction: "down" },
-      { label: "Área vigilada", value: "284k ha", direction: "up" },
+      { label: "Módulos soldados", value: "6/6", direction: "up" },
+      { label: "I²C scan", value: "0x28 · 0x77", direction: "flat" },
+      { label: "SPI loopback", value: "OK", direction: "flat" },
     ],
     status: "nominal",
     progress: 100,
-    tags: ["Deep Learning", "Radar", "Alerta", "Bosque"],
+    tags: ["I²C", "SPI", "BNO085", "BME688"],
+  },
+  {
+    code: "TEST-02",
+    sector: "Pruebas de banco",
+    title: "Validación de la trama CSV contra especificación del reglamento",
+    client: "Code review + bench",
+    region: "Reproductor serial",
+    duration: "2026-03-23 → 04-02",
+    description: "Corrimos el firmware en banco durante 8 horas, capturamos la salida serial y validamos que los 21 campos respeten orden, precisión (1 decimal en ALT/TEMP, 2 en VOLT/AX/AY/AZ) y códigos de estado.",
+    metrics: [
+      { label: "Paquetes", value: "28,804", direction: "up" },
+      { label: "Drift Mission Clock", value: "+0.4s", direction: "down" },
+      { label: "Packets SD = LoRa", value: "100%", direction: "flat" },
+    ],
+    status: "nominal",
+    progress: 100,
+    tags: ["CSV", "Bench", "Validación"],
+  },
+  {
+    code: "TEST-06",
+    sector: "Vuelo de prueba",
+    title: "Caída libre controlada desde 80 m con apertura de paracaídas",
+    client: "Campo de pruebas",
+    region: "Atizapán · 19.40°N",
+    duration: "2026-04-12",
+    description: "Lanzamiento de PROBE-01 desde torre de 80 metros con paracaídas accionado a 30 m. Registramos transición WAIT → DESC y posterior estabilización en LAND; telemetría completa en SD y ground station.",
+    metrics: [
+      { label: "Apogeo registrado", value: "78.4 m", direction: "up" },
+      { label: "T. a LAND", value: "00:01:18", direction: "flat" },
+      { label: "Pérdida de paquetes", value: "0.06%", direction: "down" },
+    ],
+    status: "telemetry",
+    progress: 92,
+    tags: ["Vuelo", "Paracaídas", "LAND"],
   },
 ];
 ---
@@ -78,9 +78,9 @@ const projects: Project[] = [
   <Container>
     <div class="flex flex-col gap-14">
       <SectionHeader
-        code="CASOS"
-        title="Operaciones en producción con resultados auditables"
-        description="Tres despliegues activos que demuestran el rendimiento de Patsani en condiciones reales: desde la alta atmósfera hasta el dosel de los bosques tropicales."
+        code="BITÁCORA"
+        title="Campañas de integración y vuelo de PROBE-01"
+        description="Tres campañas documentadas con métricas reales: integración en banco, validación de trama y vuelo de prueba desde torre. La siguiente campaña apunta al lanzamiento estratosférico."
       />
 
       <div class="grid lg:grid-cols-3 gap-6">
@@ -94,13 +94,13 @@ const projects: Project[] = [
             </div>
 
             <header class="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)]">
-              <div class="flex items-center gap-3">
-                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">[{proj.code}]</span>
-                <div class="h-3 w-px bg-[var(--color-border)]"></div>
-                <span class="label-sm text-[var(--color-text-secondary)]">{proj.sector}</span>
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em] flex-shrink-0">[{proj.code}]</span>
+                <div class="h-3 w-px bg-[var(--color-border)] flex-shrink-0"></div>
+                <span class="label-sm text-[var(--color-text-secondary)] truncate">{proj.sector}</span>
               </div>
               <Badge variant={proj.status} size="sm">
-                {proj.status === "nominal" ? "Activo" : "Live"}
+                {proj.status === "nominal" ? "Validado" : "Live"}
               </Badge>
             </header>
 
@@ -133,7 +133,7 @@ const projects: Project[] = [
 
             <footer class="px-6 py-4 mt-4 border-t border-[var(--color-border)] bg-[var(--color-surface-container-low)]/50 flex flex-col gap-3">
               <div class="flex items-center justify-between">
-                <span class="label-sm text-[var(--color-text-muted)]">Progreso</span>
+                <span class="label-sm text-[var(--color-text-muted)]">Avance</span>
                 <span class="label-sm text-[var(--color-text-primary)] font-medium">{proj.progress}%</span>
               </div>
               <div class="h-1 bg-[var(--color-surface-sunk)] rounded-xs overflow-hidden border border-[var(--color-border)]">

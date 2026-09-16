@@ -3,48 +3,71 @@ import Container from "../layout/Container.astro";
 import SectionHeader from "../layout/SectionHeader.astro";
 import Badge from "../ui/Badge.astro";
 
-interface TechGroup {
-  breadcrumb: string[];
-  items: { name: string; role: string; version?: string }[];
+interface PinRow {
+  signal: string;
+  pin: string;
+  type: string;
+  shared?: string;
 }
 
-const stack: TechGroup[] = [
+interface BusGroup {
+  breadcrumb: string[];
+  description: string;
+  rows: PinRow[];
+}
+
+const groups: BusGroup[] = [
   {
-    breadcrumb: ["ORBIT", "PAYLOAD"],
-    items: [
-      { name: "GNSS-RTK", role: "Posicionamiento", version: "v3.4" },
-      { name: "LiDAR", role: "Topografía", version: "32 canales" },
-      { name: "SAR-X", role: "Radar apertura", version: "10GHz" },
-      { name: "Hyperion", role: "Espectrómetro", version: "220 bandas" },
+    breadcrumb: ["I²C", "0x28", "0x77"],
+    description: "Bus compartido entre dos sensores ambientales. Dirección 0x28 para BNO085, 0x77 para BME688.",
+    rows: [
+      { signal: "BNO085 · SDA", pin: "A4", type: "I²C data", shared: "Bus 1" },
+      { signal: "BNO085 · SCL", pin: "A5", type: "I²C clock", shared: "Bus 1" },
+      { signal: "BME688 · SDA", pin: "A4", type: "I²C data", shared: "Bus 1" },
+      { signal: "BME688 · SCL", pin: "A5", type: "I²C clock", shared: "Bus 1" },
+      { signal: "VCC", pin: "3.3 V", type: "Alimentación" },
+      { signal: "GND", pin: "GND", type: "Referencia" },
     ],
   },
   {
-    breadcrumb: ["GROUND", "PROCESSING"],
-    items: [
-      { name: "FPGA Array", role: "Filtrado", version: "Stratix 10" },
-      { name: "CUDA Mesh", role: "GPU compute", version: "H100×8" },
-      { name: "InfluxDB", role: "Time-series", version: "v2.7" },
-      { name: "Apache Arrow", role: "Data plane", version: "v14" },
+    breadcrumb: ["SPI", "CS·D9", "CS·D10"],
+    description: "SPI compartido entre SX1278 y microSD. Selección mutuamente excluyente por CS: nunca activos simultáneamente.",
+    rows: [
+      { signal: "LoRa · NSS/CS", pin: "D9", type: "SPI select", shared: "Exclusivo" },
+      { signal: "LoRa · RST", pin: "D8", type: "Reset" },
+      { signal: "LoRa · DIO0", pin: "D2", type: "IRQ TX done" },
+      { signal: "microSD · CS", pin: "D10", type: "SPI select", shared: "Exclusivo" },
+      { signal: "MOSI · MISO · SCK", pin: "D11·D12·D13", type: "SPI compartido", shared: "Bus 2" },
+      { signal: "VCC · GND", pin: "3.3 V", type: "Alimentación" },
     ],
   },
   {
-    breadcrumb: ["DATA", "ANALYTICS"],
-    items: [
-      { name: "Pyro / PPL", role: "Probabilistic", version: "v1.9" },
-      { name: "xarray", role: "N-d arrays", version: "2024.10" },
-      { name: "DGL-KE", role: "Knowledge graphs", version: "v0.4" },
-      { name: "STAC API", role: "Catálogo", version: "v1.1" },
+    breadcrumb: ["UART", "9600", "8N1"],
+    description: "Puerto serial del GPS NEO-6M. Si no hay fix, el sistema transmite 0.000000,0.000000 sin bloquear el ciclo principal.",
+    rows: [
+      { signal: "GPS · TXD", pin: "D4", type: "RX Arduino" },
+      { signal: "GPS · RXD", pin: "D5", type: "TX Arduino" },
+      { signal: "GPS · VCC", pin: "5 V", type: "Alimentación módulo" },
+      { signal: "GPS · GND", pin: "GND", type: "Referencia" },
     ],
   },
   {
-    breadcrumb: ["OPS", "COMMS"],
-    items: [
-      { name: "CCSDS 131", role: "TM/TC", version: "stack" },
-      { name: "Yamcs", role: "Mission ctrl", version: "v5.8" },
-      { name: "OpenC3", role: "Cosmos ext.", version: "v5" },
-      { name: "Sigstore", role: "Supply chain", version: "v0.6" },
+    breadcrumb: ["ADC", "A1", "12-bit"],
+    description: "Divisor resistivo para adaptar el voltaje de batería al rango del ADC. Lectura con 2 decimales en el campo VOLTAGE.",
+    rows: [
+      { signal: "VBAT · TAP", pin: "A1", type: "ADC input", shared: "Divisor R1/R2" },
+      { signal: "LED · STATUS", pin: "A7", type: "GPIO output" },
     ],
   },
+];
+
+const stack = [
+  { name: "Arduino Nano ESP32", role: "MCU principal · 240 MHz", version: "ESP32-S3" },
+  { name: "BNO085", role: "IMU 9-axis · I²C 0x28", version: "±16 g" },
+  { name: "BME688", role: "P/T/H/VOC · I²C 0x77", version: "Bosch" },
+  { name: "SX1278 / RA-02", role: "LoRa 433 MHz · SPI", version: "+14 dBm" },
+  { name: "NEO-6M V2", role: "GPS · UART", version: "10 Hz" },
+  { name: "microSD SPI", role: "CSV log · FAT32", version: "CS=D10" },
 ];
 ---
 
@@ -54,61 +77,99 @@ const stack: TechGroup[] = [
       <div class="grid lg:grid-cols-12 gap-8 items-end">
         <div class="lg:col-span-7">
           <SectionHeader
-            code="STACK"
-            title="Una pila tecnológica diseñada para la confiabilidad operativa"
-            description="Cada capa está seleccionada por su madurez en entornos aeroespaciales y su capacidad de operar bajo restricciones estrictas de cómputo, energía y ancho de banda."
+            code="HARDWARE"
+            title="Pinout completo del PROBE-01 contra Arduino Nano ESP32"
+            description="Asignaciones literales del documento de requisitos. Cada pin se enumera una sola vez; los buses compartidos se documentan en columna propia."
           />
         </div>
         <div class="lg:col-span-5 flex flex-wrap gap-2 lg:justify-end">
-          <Badge variant="nominal" withDot>Reproducible</Badge>
-          <Badge variant="nominal" withDot>Open source core</Badge>
-          <Badge variant="telemetry" size="md">SOC2 / ITAR-ready</Badge>
+          <Badge variant="nominal" withDot>Verificado en banco</Badge>
+          <Badge variant="nominal" withDot>CS multiplexado</Badge>
+          <Badge variant="telemetry" size="md">v1.0 · build 14.04</Badge>
         </div>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
-        {stack.map((group) => (
-          <div class="bg-[var(--color-surface)] flex flex-col">
-            <header class="flex items-center gap-2 px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-container-low)]">
-              {group.breadcrumb.map((seg, i) => (
+      <div class="flex flex-col gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+        {groups.map((g) => (
+          <article class="bg-[var(--color-surface)]">
+            <header class="flex flex-wrap items-center gap-3 px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-container-low)]">
+              {g.breadcrumb.map((seg, i) => (
                 <>
                   {i > 0 && <span class="text-[var(--color-sage)] font-mono text-[0.6875rem]">/</span>}
-                  <span class={`font-mono text-[0.6875rem] font-semibold tracking-[0.1em] uppercase ${i === group.breadcrumb.length - 1 ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)]"}`}>
+                  <span class={`font-mono text-[0.6875rem] font-semibold tracking-[0.1em] uppercase ${i === g.breadcrumb.length - 1 ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)]"}`}>
                     {seg}
                   </span>
                 </>
               ))}
+              <span class="body-sm text-[var(--color-text-muted)] ml-2 truncate hidden md:inline">— {g.description}</span>
             </header>
-            <ul class="flex flex-col">
-              {group.items.map((item) => (
-                <li class="group/item flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-surface-sunk)] transition-colors duration-150">
-                  <div class="flex flex-col gap-0.5 min-w-0">
-                    <span class="font-mono font-medium text-[0.8125rem] text-[var(--color-text-primary)] truncate">
-                      {item.name}
-                    </span>
-                    <span class="body-sm text-[var(--color-text-muted)] truncate">{item.role}</span>
-                  </div>
-                  {item.version && (
-                    <span class="label-sm text-[var(--color-sage)] font-mono whitespace-nowrap pl-3">
-                      {item.version}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="border-b border-[var(--color-border)] bg-[var(--color-surface-sunk)]">
+                    <th class="label-sm text-[var(--color-text-secondary)] py-2.5 px-5 font-semibold">Señal</th>
+                    <th class="label-sm text-[var(--color-text-secondary)] py-2.5 px-3 font-semibold">Pin</th>
+                    <th class="label-sm text-[var(--color-text-secondary)] py-2.5 px-3 font-semibold hidden sm:table-cell">Tipo</th>
+                    <th class="label-sm text-[var(--color-text-secondary)] py-2.5 px-5 font-semibold hidden md:table-cell">Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {g.rows.map((row) => (
+                    <tr class="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-surface-sunk)]/60 transition-colors">
+                      <td class="py-2.5 px-5 font-mono text-[0.8125rem] text-[var(--color-text-primary)] whitespace-nowrap">{row.signal}</td>
+                      <td class="py-2.5 px-3">
+                        <span class="inline-flex items-center justify-center min-w-[2.5rem] h-6 px-2 font-mono text-[0.75rem] font-semibold text-[var(--color-primary)] bg-[var(--color-surface-sunk)] border border-[var(--color-border)] rounded-xs">
+                          {row.pin}
+                        </span>
+                      </td>
+                      <td class="py-2.5 px-3 body-sm text-[var(--color-text-secondary)] whitespace-nowrap hidden sm:table-cell">{row.type}</td>
+                      <td class="py-2.5 px-5 body-sm text-[var(--color-text-muted)] font-mono hidden md:table-cell">{row.shared ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </article>
         ))}
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[var(--color-border)] mt-2">
-        <span class="label-sm text-[var(--color-text-muted)]">Build reproducible · SHA-256 verificado · Container registry privado</span>
-        <div class="flex items-center gap-2">
-          <span class="label-sm text-[var(--color-text-secondary)]">Pipeline</span>
-          <span class="label-sm text-[var(--color-primary-hover)] font-medium">CI / CD</span>
-          <span class="text-[var(--color-border)]">→</span>
-          <span class="label-sm text-[var(--color-primary-hover)] font-medium">Staging</span>
-          <span class="text-[var(--color-border)]">→</span>
-          <span class="label-sm text-[var(--color-primary-hover)] font-medium">Producción</span>
+      <div class="grid lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <span class="label-sm text-[var(--color-text-secondary)] tracking-[0.1em]">[BOM · BILL OF MATERIALS]</span>
+            <Badge variant="standby" size="sm">6 ítems</Badge>
+          </div>
+          <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+            {stack.map((item) => (
+              <li class="flex items-start justify-between gap-3 py-2 border-b border-[var(--color-border)] last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0">
+                <div class="flex flex-col gap-0.5 min-w-0">
+                  <span class="font-mono font-medium text-[0.8125rem] text-[var(--color-text-primary)] truncate">{item.name}</span>
+                  <span class="body-sm text-[var(--color-text-muted)] truncate">{item.role}</span>
+                </div>
+                <span class="label-sm text-[var(--color-sage)] font-mono whitespace-nowrap pl-2">{item.version}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="lg:col-span-5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <span class="label-sm text-[var(--color-text-secondary)] tracking-[0.1em]">[CAMPO CSV · TRAMA]</span>
+            <Badge variant="telemetry" size="sm">21 COLS</Badge>
+          </div>
+          <p class="body-sm text-[var(--color-text-secondary)] leading-relaxed">
+            Diez campos obligatorios en orden fijo (TEAM_ID … STATE) seguidos por once campos de misión secundaria. ASCII separado por comas, una línea por paquete, terminada en <code class="font-mono text-[var(--color-primary)]">\n</code>.
+          </p>
+          <pre class="bg-[var(--color-surface-sunk)] border border-[var(--color-border)] rounded-sm p-3 overflow-x-auto"><code class="font-mono text-[0.6875rem] leading-[1.5rem] text-[var(--color-primary)] whitespace-pre">TEAM_ID,MISSION_TIME,PACKET_COUNT,
+ALTITUDE,TEMPERATURE,VOLTAGE,
+ACCEL_X,ACCEL_Y,ACCEL_Z,STATE,
+LATITUDE,LONGITUDE,PRESSURE,
+HUMIDITY,VOC,GYRO_X,GYRO_Y,
+GYRO_Z,MAG_X,MAG_Y,MAG_Z</code></pre>
+          <div class="flex items-center justify-between text-[var(--color-text-muted)] pt-1 border-t border-[var(--color-border)]">
+            <span class="label-sm">Codificación</span>
+            <span class="label-sm font-mono text-[var(--color-primary-hover)]">ASCII · CSV · \n</span>
+          </div>
         </div>
       </div>
     </div>

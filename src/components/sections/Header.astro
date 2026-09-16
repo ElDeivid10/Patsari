@@ -4,10 +4,11 @@ import StatusDot from "../ui/StatusDot.astro";
 import Container from "../layout/Container.astro";
 
 const navLinks = [
-  { href: "#capacidades", label: "Capacidades" },
-  { href: "#mision", label: "Misión" },
-  { href: "#proyectos", label: "Casos" },
-  { href: "#tecnologia", label: "Tecnología" },
+  { href: "#capacidades", label: "Módulos" },
+  { href: "#mision", label: "Estados" },
+  { href: "#proyectos", label: "Bitácora" },
+  { href: "#equipo", label: "Equipo" },
+  { href: "#tecnologia", label: "Hardware" },
   { href: "#contacto", label: "Contacto" },
 ];
 ---
@@ -20,10 +21,12 @@ const navLinks = [
       <a href="/" class="flex items-center gap-2.5 group">
         <span class="relative w-7 h-7 flex items-center justify-center">
           <svg viewBox="0 0 28 28" class="w-7 h-7">
-            <circle cx="14" cy="14" r="13" fill="none" stroke="#283e06" stroke-width="1.5"></circle>
-            <ellipse cx="14" cy="14" rx="13" ry="5" fill="none" stroke="#3b5110" stroke-width="1" opacity="0.7"></ellipse>
-            <circle cx="14" cy="14" r="3" fill="#283e06"></circle>
-            <circle cx="24" cy="14" r="1.5" fill="#b7cd7f"></circle>
+            <rect x="3" y="5" width="22" height="18" rx="1.5" fill="none" stroke="#283e06" stroke-width="1.5"></rect>
+            <line x1="3" y1="11" x2="25" y2="11" stroke="#283e06" stroke-width="1"></line>
+            <line x1="11" y1="5" x2="11" y2="23" stroke="#3b5110" stroke-width="0.8"></line>
+            <line x1="17" y1="5" x2="17" y2="23" stroke="#3b5110" stroke-width="0.8"></line>
+            <circle cx="14" cy="16" r="2.5" fill="#283e06"></circle>
+            <circle cx="14" cy="16" r="4" fill="none" stroke="#b7cd7f" stroke-width="0.7"></circle>
           </svg>
         </span>
         <div class="flex flex-col leading-none">
@@ -31,7 +34,7 @@ const navLinks = [
             Patsani
           </span>
           <span class="label-sm text-[var(--color-text-muted)] mt-0.5 hidden sm:block">
-            EARTH-OS // v2.6
+            TEAM 0001 · PROBE v1.0
           </span>
         </div>
       </a>
@@ -53,13 +56,13 @@ const navLinks = [
       <div class="flex items-center gap-3">
         <div class="hidden md:flex items-center gap-2 px-2.5 h-8 bg-[var(--color-surface-sunk)] border border-[var(--color-border)] rounded-sm">
           <StatusDot variant="nominal" size="sm" pulse />
-          <span class="label-sm text-[var(--color-text-secondary)]">EN LÍNEA</span>
+          <span class="label-sm text-[var(--color-text-secondary)]">WAIT</span>
         </div>
         <Button variant="secondary" size="sm" class="hidden md:inline-flex">
-          Acceso consola
+          TELEMETRY.CSV
         </Button>
         <Button variant="primary" size="sm" href="#contacto">
-          Solicitar demo
+          Contacto
         </Button>
       </div>
     </div>

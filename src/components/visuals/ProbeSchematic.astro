@@ -1,0 +1,197 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+
+const sensors = [
+  { id: "BNO085", type: "IMU 9-axis", bus: "I2C · A4/A5", x: 70, y: 90 },
+  { id: "BME688", type: "P / T / H / VOC", bus: "I2C · A4/A5", x: 530, y: 90 },
+  { id: "NEO-6M", type: "GPS · UART", bus: "D4 / D5", x: 70, y: 380 },
+  { id: "SX1278", type: "LoRa · SPI", bus: "CS=D9 · D8 · D2", x: 530, y: 200 },
+  { id: "microSD", type: "CSV log", bus: "SPI · CS=D10", x: 530, y: 320 },
+  { id: "DIV A1", type: "Battery /V", bus: "ADC · A1", x: 70, y: 200 },
+  { id: "LED A7", type: "Status", bus: "GPIO · A7", x: 70, y: 320 },
+];
+---
+
+<div class={`relative w-full aspect-[4/3] max-w-[620px] mx-auto ${className}`} aria-hidden="true">
+  <svg
+    viewBox="0 0 600 480"
+    preserveAspectRatio="xMidYMid meet"
+    class="w-full h-full"
+  >
+    <defs>
+      <linearGradient id="mcu-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#283e06"></stop>
+        <stop offset="100%" stop-color="#162700"></stop>
+      </linearGradient>
+      <pattern id="mcu-grid" width="6" height="6" patternUnits="userSpaceOnUse">
+        <path d="M 6 0 L 0 0 0 6" fill="none" stroke="#b7cd7f" stroke-width="0.4" opacity="0.3"></path>
+      </pattern>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b5110"></path>
+      </marker>
+    </defs>
+
+    <rect width="600" height="480" fill="transparent"></rect>
+
+    <line x1="40" y1="40" x2="40" y2="440" stroke="#dce5d3" stroke-width="0.5" stroke-dasharray="2 3"></line>
+    <line x1="560" y1="40" x2="560" y2="440" stroke="#dce5d3" stroke-width="0.5" stroke-dasharray="2 3"></line>
+    <line x1="40" y1="40" x2="560" y2="40" stroke="#dce5d3" stroke-width="0.5" stroke-dasharray="2 3"></line>
+    <line x1="40" y1="440" x2="560" y2="440" stroke="#dce5d3" stroke-width="0.5" stroke-dasharray="2 3"></line>
+
+    <g>
+      <rect x="40" y="40" width="160" height="80" fill="none" stroke="#b7cd7f" stroke-width="0.6"></rect>
+      <path d="M 40 60 L 50 60 M 40 70 L 50 70 M 40 80 L 50 80 M 40 90 L 50 90 M 40 100 L 50 100 M 40 110 L 50 110" stroke="#b7cd7f" stroke-width="0.6"></path>
+      <text x="62" y="58" font-family="JetBrains Mono, monospace" font-size="9" fill="#424b3e" letter-spacing="1">I²C BUS</text>
+      <text x="62" y="78" font-family="JetBrains Mono, monospace" font-size="8" fill="#75796b">SDA · A4</text>
+      <text x="62" y="92" font-family="JetBrains Mono, monospace" font-size="8" fill="#75796b">SCL · A5</text>
+      <text x="62" y="106" font-family="JetBrains Mono, monospace" font-size="8" fill="#3b5110">400 kHz</text>
+    </g>
+
+    <g>
+      <rect x="400" y="40" width="160" height="100" fill="none" stroke="#b7cd7f" stroke-width="0.6"></rect>
+      <text x="412" y="58" font-family="JetBrains Mono, monospace" font-size="9" fill="#424b3e" letter-spacing="1">SPI BUS</text>
+      <text x="412" y="74" font-family="JetBrains Mono, monospace" font-size="8" fill="#75796b">MOSI · D11</text>
+      <text x="412" y="86" font-family="JetBrains Mono, monospace" font-size="8" fill="#75796b">MISO · D12</text>
+      <text x="412" y="98" font-family="JetBrains Mono, monospace" font-size="8" fill="#75796b">SCK  · D13</text>
+      <text x="412" y="114" font-family="JetBrains Mono, monospace" font-size="8" fill="#3b5110">~4 MHz</text>
+      <text x="412" y="128" font-family="JetBrains Mono, monospace" font-size="7" fill="#75796b">CS multiplexed</text>
+    </g>
+
+    <g>
+      <line x1="200" y1="140" x2="200" y2="320" stroke="#283e06" stroke-width="1.4" opacity="0.55"></line>
+      <line x1="400" y1="240" x2="400" y2="320" stroke="#3b5110" stroke-width="1.4" opacity="0.55"></line>
+    </g>
+
+    {sensors.map((s) => (
+      <g>
+        <rect
+          x={s.x - 50}
+          y={s.y - 30}
+          width="100"
+          height="60"
+          rx="2"
+          fill="#ffffff"
+          stroke="#dce5d3"
+          stroke-width="1"
+        ></rect>
+        <rect
+          x={s.x - 50}
+          y={s.y - 30}
+          width="100"
+          height="14"
+          fill="#f1f5eb"
+        ></rect>
+        <text
+          x={s.x}
+          y={s.y - 20}
+          text-anchor="middle"
+          font-family="JetBrains Mono, monospace"
+          font-size="8"
+          font-weight="600"
+          fill="#283e06"
+          letter-spacing="0.5"
+        >
+          {s.id}
+        </text>
+        <text
+          x={s.x}
+          y={s.y}
+          text-anchor="middle"
+          font-family="JetBrains Mono, monospace"
+          font-size="7.5"
+          fill="#424b3e"
+        >
+          {s.type}
+        </text>
+        <text
+          x={s.x}
+          y={s.y + 13}
+          text-anchor="middle"
+          font-family="JetBrains Mono, monospace"
+          font-size="7"
+          fill="#75796b"
+        >
+          {s.bus}
+        </text>
+        <circle cx={s.x - 46} cy={s.y - 23} r="1.5" fill="#b7cd7f"></circle>
+      </g>
+    ))}
+
+    <line x1="120" y1="120" x2="200" y2="140" stroke="#283e06" stroke-width="1" opacity="0.6"></line>
+    <line x1="480" y1="120" x2="400" y2="140" stroke="#283e06" stroke-width="1" opacity="0.6"></line>
+    <line x1="480" y1="230" x2="400" y2="240" stroke="#3b5110" stroke-width="1" opacity="0.6"></line>
+    <line x1="480" y1="350" x2="400" y2="240" stroke="#3b5110" stroke-width="1" opacity="0.6"></line>
+    <line x1="120" y1="230" x2="200" y2="200" stroke="#424b3e" stroke-width="1" opacity="0.5"></line>
+    <line x1="120" y1="350" x2="200" y2="320" stroke="#424b3e" stroke-width="1" opacity="0.5"></line>
+    <line x1="120" y1="410" x2="200" y2="320" stroke="#424b3e" stroke-width="1" opacity="0.5"></line>
+
+    <g>
+      <rect x="220" y="220" width="160" height="80" fill="url(#mcu-grad)"></rect>
+      <rect x="220" y="220" width="160" height="80" fill="url(#mcu-grid)"></rect>
+      <text x="300" y="245" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600" fill="#b7cd7f" letter-spacing="1">
+        ARDUINO NANO
+      </text>
+      <text x="300" y="260" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#f8faf5" letter-spacing="1">
+        ESP32
+      </text>
+      <text x="300" y="278" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#b7cd7f" opacity="0.85">
+        240 MHz · 320 KB SRAM
+      </text>
+      <text x="300" y="291" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#b7cd7f" opacity="0.7">
+        Mission Clock · millis()
+      </text>
+
+      <circle cx="232" cy="232" r="1.8" fill="#b7cd7f"></circle>
+      <circle cx="232" cy="232" r="3" fill="none" stroke="#b7cd7f" stroke-width="0.5" opacity="0.6">
+        <animate attributeName="r" values="1.8;6;1.8" dur="2s" repeatCount="indefinite"></animate>
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite"></animate>
+      </circle>
+      <text x="244" y="234" font-family="JetBrains Mono, monospace" font-size="6" fill="#b7cd7f">RUN</text>
+
+      <g stroke="#b7cd7f" stroke-width="0.5" fill="none" opacity="0.5">
+        <path d="M 226 296 L 232 296 M 226 300 L 232 300 M 226 304 L 232 304 M 226 308 L 232 308 M 226 312 L 232 312 M 226 316 L 232 316 M 226 320 L 232 320 M 226 324 L 232 324"></path>
+        <path d="M 368 296 L 374 296 M 368 300 L 374 300 M 368 304 L 374 304 M 368 308 L 374 308 M 368 312 L 374 312 M 368 316 L 374 316 M 368 320 L 374 320 M 368 324 L 374 324"></path>
+      </g>
+    </g>
+
+    <g>
+      <line x1="300" y1="300" x2="300" y2="350" stroke="#b7cd7f" stroke-width="1.2" opacity="0.7"></line>
+      <polygon points="295,348 305,348 300,356" fill="#b7cd7f"></polygon>
+      <text x="312" y="335" font-family="JetBrains Mono, monospace" font-size="8" fill="#283e06" font-weight="600" letter-spacing="0.5">
+        CSV PKT
+      </text>
+    </g>
+
+    <g>
+      <rect x="220" y="356" width="160" height="60" fill="#0f1710"></rect>
+      <text x="232" y="374" font-family="JetBrains Mono, monospace" font-size="8" fill="#b7cd7f" letter-spacing="0.8">
+        TELEMETRY.CSV
+      </text>
+      <text x="232" y="388" font-family="JetBrains Mono, monospace" font-size="7" fill="#b7cd7f" opacity="0.85">
+        TEAM_ID,MISSION_TIME,
+      </text>
+      <text x="232" y="399" font-family="JetBrains Mono, monospace" font-size="7" fill="#b7cd7f" opacity="0.7">
+        PACKET,ALT,TEMP,VOLT,
+      </text>
+      <text x="232" y="410" font-family="JetBrains Mono, monospace" font-size="7" fill="#b7cd7f" opacity="0.55">
+        AX,AY,AZ,STATE…
+      </text>
+    </g>
+
+    <g font-family="JetBrains Mono, monospace" font-size="8">
+      <text x="20" y="20" fill="#283e06" font-weight="600" letter-spacing="1">PAT-SCHEMATIC // v1.0</text>
+      <text x="580" y="20" fill="#75796b" letter-spacing="0.5" text-anchor="end">↗ GROUND STATION</text>
+    </g>
+
+    <g font-family="JetBrains Mono, monospace" font-size="7" fill="#75796b">
+      <text x="20" y="468">SHEET 1/1 · ISO A4 · mm</text>
+      <text x="580" y="468" text-anchor="end">DRAWN 2026-04-14 · PATSANI</text>
+    </g>
+  </svg>
+
+  <div class="absolute inset-x-0 top-0 h-px anim-scan bg-gradient-to-r from-transparent via-[var(--color-sage)] to-transparent pointer-events-none"></div>
+</div>

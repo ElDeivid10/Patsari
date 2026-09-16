@@ -5,41 +5,41 @@ import StatusDot from "../ui/StatusDot.astro";
 
 const columns = [
   {
-    title: "Producto",
+    title: "Documentación",
     links: [
-      { label: "Capacidades", href: "#capacidades" },
-      { label: "Casos de estudio", href: "#proyectos" },
-      { label: "Tecnología", href: "#tecnologia" },
-      { label: "Hoja técnica", href: "#" },
-      { label: "Documentación API", href: "#" },
+      { label: "Requisitos técnicos", href: "#" },
+      { label: "Pinout del prototipo", href: "#tecnologia" },
+      { label: "Formato de la trama", href: "#tecnologia" },
+      { label: "Esquemático (PDF)", href: "#" },
+      { label: "BOM completo", href: "#" },
     ],
   },
   {
-    title: "Compañía",
+    title: "Bitácora",
     links: [
-      { label: "Misión", href: "#mision" },
-      { label: "Equipo", href: "#" },
-      { label: "Carreras · 6 vacantes", href: "#" },
-      { label: "Sala de prensa", href: "#" },
-      { label: "Política de datos", href: "#" },
+      { label: "Integración", href: "#proyectos" },
+      { label: "Pruebas de banco", href: "#proyectos" },
+      { label: "Vuelo de prueba 80 m", href: "#proyectos" },
+      { label: "TELEMETRY.CSV ejemplos", href: "#" },
+      { label: "Estado de la misión", href: "#mision" },
     ],
   },
   {
-    title: "Recursos",
+    title: "Equipo",
     links: [
-      { label: "Catálogo STAC público", href: "#" },
-      { label: "Notas de lanzamiento", href: "#" },
-      { label: "Reportes trimestrales", href: "#" },
-      { label: "Investigación abierta", href: "#" },
-      { label: "Estado del servicio", href: "#" },
+      { label: "Integrantes", href: "#" },
+      { label: "Cómo unirse", href: "#contacto" },
+      { label: "Mentorías disponibles", href: "#contacto" },
+      { label: "Calendario de reuniones", href: "#contacto" },
+      { label: "Código de conducta", href: "#" },
     ],
   },
 ];
 
 const regions = [
-  { code: "MX", city: "Ciudad de México", role: "HQ · NOC primario" },
-  { code: "CL", city: "Santiago", role: "NOC secundario" },
-  { code: "EU", role: "Outpost · Frankfurt", city: "Solo lectura" },
+  { code: "LAB", city: "CDMX · Lab principal", role: "Soldadura · integración · QA" },
+  { code: "FLT", city: "Atizapán · campo", role: "Lanzamientos &lt; 100 m" },
+  { code: "STR", city: "Querétaro · futura base", role: "Estratosfera &gt; 25 km" },
 ];
 ---
 
@@ -50,21 +50,23 @@ const regions = [
         <div class="lg:col-span-6 flex flex-col gap-6">
           <a href="/" class="flex items-center gap-3">
             <svg viewBox="0 0 28 28" class="w-8 h-8">
-              <circle cx="14" cy="14" r="13" fill="none" stroke="#b7cd7f" stroke-width="1.5"></circle>
-              <ellipse cx="14" cy="14" rx="13" ry="5" fill="none" stroke="#b7cd7f" stroke-width="1" opacity="0.7"></ellipse>
-              <circle cx="14" cy="14" r="3" fill="#b7cd7f"></circle>
-              <circle cx="24" cy="14" r="1.5" fill="#f8faf5"></circle>
+              <rect x="3" y="5" width="22" height="18" rx="1.5" fill="none" stroke="#b7cd7f" stroke-width="1.5"></rect>
+              <line x1="3" y1="11" x2="25" y2="11" stroke="#b7cd7f" stroke-width="1"></line>
+              <line x1="11" y1="5" x2="11" y2="23" stroke="#b7cd7f" stroke-width="0.7"></line>
+              <line x1="17" y1="5" x2="17" y2="23" stroke="#b7cd7f" stroke-width="0.7"></line>
+              <circle cx="14" cy="16" r="2.5" fill="#b7cd7f"></circle>
+              <circle cx="14" cy="16" r="4" fill="none" stroke="#b7cd7f" stroke-width="0.7" opacity="0.7"></circle>
             </svg>
             <div class="flex flex-col leading-none">
               <span class="font-display font-bold text-[1.25rem] tracking-[-0.02em] text-[var(--color-surface)]">
                 Patsani
               </span>
-              <span class="label-sm text-[var(--color-sage)] mt-1">EARTH-OS // 2026</span>
+              <span class="label-sm text-[var(--color-sage)] mt-1">TEAM 0001 · PROBE v1.0</span>
             </div>
           </a>
 
           <p class="body-md text-[var(--color-sage)]/80 leading-relaxed max-w-xs">
-            Instrumentación orbital para el monitoreo terrestre. Operamos en dos continentes con redundancia N+2 y datos abiertos por defecto.
+            Equipo de instrumentación de vuelo. Diseñamos, soldamos y volamos sondas de telemetría para campañas de corta y estratosfera.
           </p>
 
           <div class="flex flex-col gap-2">
@@ -73,9 +75,9 @@ const regions = [
                 <span class="font-mono text-[0.6875rem] font-semibold tracking-[0.1em] text-[var(--color-sage)] border border-[var(--color-sage)]/40 px-2 py-0.5 rounded-xs">
                   {r.code}
                 </span>
-                <span class="body-sm text-[var(--color-surface)] font-medium">{r.city}</span>
+                <span class="body-sm text-[var(--color-surface)] font-medium" set:html={r.city}></span>
                 <span class="text-[var(--color-sage)]/60">·</span>
-                <span class="body-sm text-[var(--color-sage)]/80">{r.role}</span>
+                <span class="body-sm text-[var(--color-sage)]/80" set:html={r.role}></span>
               </div>
             ))}
           </div>
@@ -106,17 +108,17 @@ const regions = [
         <div class="flex flex-wrap items-center gap-4">
           <div class="flex items-center gap-2">
             <StatusDot variant="telemetry" size="sm" pulse />
-            <span class="label-sm text-[var(--color-sage)]">SISTEMAS OPERATIVOS</span>
+            <span class="label-sm text-[var(--color-sage)]">MISSION STATE · WAIT</span>
           </div>
           <div class="h-3 w-px bg-[var(--color-sage)]/30"></div>
-          <span class="label-sm text-[var(--color-sage)]/80">© 2026 Patsani Systems S.A.P.I.</span>
+          <span class="label-sm text-[var(--color-sage)]/80">© 2026 Patsani Team 0001</span>
           <span class="label-sm text-[var(--color-sage)]/60">·</span>
-          <span class="label-sm text-[var(--color-sage)]/80">RFC PTA260412KX9</span>
+          <span class="label-sm text-[var(--color-sage)]/80">Documentación bajo CC-BY-SA 4.0</span>
         </div>
 
         <div class="flex items-center gap-4">
           <CoordinateBreadcrumb
-            segments={["PATSANI", "EARTH-OS", "v2.6.1", "BUILD-2026.04.14"]}
+            segments={["PAT", "TEAM-0001", "BUILD-2026.04.14"]}
             variant="inverse"
             size="md"
           />

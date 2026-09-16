@@ -1,86 +1,170 @@
 ---
 import Container from "../layout/Container.astro";
 import SectionHeader from "../layout/SectionHeader.astro";
-import SensorMesh from "../visuals/SensorMesh.astro";
-import Badge from "../ui/Badge.astro";
 import Button from "../ui/Button.astro";
+import Badge from "../ui/Badge.astro";
+
+const states = [
+  {
+    code: "WAIT",
+    title: "Espera",
+    description: "Sistema encendido. Inicializa BNO085, BME688, GPS, LoRa y microSD. Captura presión de referencia y espera un descenso sostenido.",
+    triggers: ["Inicialización OK", "Sin descenso confirmado"],
+    color: "#75796b",
+  },
+  {
+    code: "DESC",
+    title: "Descenso",
+    description: "Detectado descenso sostenido: altitud cae más allá del umbral y la tendencia negativa se mantiene durante varias lecturas consecutivas.",
+    triggers: ["Δaltitud < umbral", "Tendencia −2 o −3 ciclos", "Confirmación por acelerómetro"],
+    color: "#3b5110",
+  },
+  {
+    code: "LAND",
+    title: "Aterrizaje",
+    description: "Después de DESC, la variación de altitud se estabiliza y la velocidad vertical tiende a cero durante el tiempo de confirmación.",
+    triggers: ["Variación < umbral", "V.vertical ≈ 0", "Estabilidad sostenida"],
+    color: "#283e06",
+  },
+];
 
 const principles = [
   {
-    code: "PRN-01",
-    title: "Precisión sin compromiso",
-    body: "Cada lectura es trazable a estándares primarios. Calibramos in-situ y documentamos las cadenas de incertidumbre.",
+    code: "RNG-01",
+    title: "Una sola fuente de verdad",
+    body: "El paquete CSV se construye una vez y se reutiliza para LoRa y microSD. Nunca existen dos formatos para los mismos datos.",
   },
   {
-    code: "PRN-02",
-    title: "Independencia operativa",
-    body: "Infraestructura propia, redundancia N+2 y centros de proceso en dos continentes. Sin dependencias críticas externas.",
+    code: "RNG-02",
+    title: "Estados con histéresis",
+    body: "DESC exige múltiples comprobaciones consecutivas y LAND es terminal: una vez confirmado, no regresa a WAIT ni a DESC en la misma misión.",
   },
   {
-    code: "PRN-03",
-    title: "Datos abiertos por defecto",
-    body: "El 70% de los productos derivados son públicos bajo licencias abiertas. El conocimiento地球 es patrimonio común.",
+    code: "RNG-03",
+    title: "Sin delay() prolongados",
+    body: "El ciclo principal usa millis() para mantener Mission Clock, GPS, sensores y enlace LoRa funcionando en paralelo sin bloqueos.",
   },
 ];
 ---
 
 <section id="mision" class="relative py-20 md:py-28 border-t border-[var(--color-border)]">
   <Container>
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-      <div class="lg:col-span-7 flex flex-col gap-8">
-        <SectionHeader
-          code="MISIÓN"
-          title="Medir la Tierra con la disciplina de una misión espacial"
-          description="Patsani nace de la convergencia entre instrumentación aeroespacial y observación ecológica. Construimos sistemas que producen datos verificables, auditables y útiles para la toma de decisiones ambientales."
-        />
+    <div class="flex flex-col gap-16">
+      <SectionHeader
+        code="ESTADOS"
+        title="Máquina de estados de vuelo con histéresis"
+        description="El firmware calcula el estado de la misión en cada ciclo a partir de altitud, tendencia, estabilidad y Mission Clock. Los códigos son exactamente los del reglamento: WAIT, DESC, LAND."
+      />
 
-        <div class="flex flex-col gap-5">
-          {principles.map((p) => (
-            <article class="group relative border-l-2 border-[var(--color-border)] hover:border-[var(--color-primary)] pl-6 py-3 transition-colors duration-200">
-              <div class="absolute -left-px top-3 w-2 h-2 bg-[var(--color-border)] group-hover:bg-[var(--color-primary)] transition-colors"></div>
-              <div class="flex items-center gap-3 mb-2">
-                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">[{p.code}]</span>
-                <div class="h-px flex-1 bg-[var(--color-border)]"></div>
+      <div class="grid md:grid-cols-3 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
+        {states.map((s, i) => (
+          <article class="relative bg-[var(--color-surface)] p-7 flex flex-col gap-5">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-[1.5rem] font-bold tracking-[0.05em]" style={`color: ${s.color}`}>
+                  {s.code}
+                </span>
+                <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">STATE.{String(i + 1).padStart(2, "0")}</span>
               </div>
-              <h3 class="font-display font-semibold text-[1.125rem] leading-snug text-[var(--color-text-primary)] mb-2">
-                {p.title}
-              </h3>
-              <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
-                {p.body}
-              </p>
-            </article>
-          ))}
-        </div>
+              {i < 2 && (
+                <svg width="40" height="14" viewBox="0 0 40 14" class="hidden md:block opacity-50">
+                  <line x1="0" y1="7" x2="34" y2="7" stroke="#b7cd7f" stroke-width="1.5" stroke-dasharray="3 3"></line>
+                  <polygon points="34,3 40,7 34,11" fill="#b7cd7f"></polygon>
+                </svg>
+              )}
+            </div>
 
-        <div class="flex flex-wrap gap-3 pt-2">
-          <Button variant="secondary" href="#contacto">
-            <span>Hablar con el equipo</span>
-          </Button>
-          <Badge variant="nominal" withDot>En operación desde 2019</Badge>
-        </div>
+            <h3 class="font-display font-semibold text-[1.25rem] leading-tight tracking-[-0.01em] text-[var(--color-text-primary)]">
+              {s.title}
+            </h3>
+
+            <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
+              {s.description}
+            </p>
+
+            <div class="pt-4 border-t border-[var(--color-border)] flex flex-col gap-2">
+              <span class="label-sm text-[var(--color-text-muted)] tracking-[0.08em]">CONDICIONES</span>
+              <ul class="flex flex-col gap-1.5">
+                {s.triggers.map((t) => (
+                  <li class="flex items-start gap-2 body-sm text-[var(--color-text-secondary)]">
+                    <span class="text-[var(--color-sage)] mt-0.5 flex-shrink-0">›</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))}
       </div>
 
-      <div class="lg:col-span-5 relative">
-        <div class="absolute inset-0 -m-8 pointer-events-none opacity-50">
-          <div class="absolute inset-0 grid-bg"></div>
-        </div>
-        <div class="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-8 shadow-elevated">
-          <div class="absolute top-3 right-3">
-            <Badge variant="telemetry" size="sm">RED ACTIVA</Badge>
+      <div class="grid lg:grid-cols-12 gap-12 items-start">
+        <div class="lg:col-span-7 flex flex-col gap-6">
+          <div class="flex items-center gap-3">
+            <span class="label-sm text-[var(--color-text-secondary)] tracking-[0.12em]">[REGLAS DE DISEÑO]</span>
+            <div class="h-px flex-1 bg-[var(--color-border)]"></div>
           </div>
-          <SensorMesh variant="default" animated />
-          <div class="mt-6 flex items-center justify-between text-[var(--color-text-secondary)]">
-            <div class="flex flex-col gap-0.5">
-              <span class="label-sm text-[var(--color-text-muted)]">Nodos</span>
-              <span class="telemetry-num text-[var(--color-text-primary)]">248</span>
+          <div class="flex flex-col gap-5">
+            {principles.map((p) => (
+              <article class="group relative border-l-2 border-[var(--color-border)] hover:border-[var(--color-primary)] pl-6 py-3 transition-colors duration-200">
+                <div class="absolute -left-px top-3 w-2 h-2 bg-[var(--color-border)] group-hover:bg-[var(--color-primary)] transition-colors"></div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="label-sm text-[var(--color-text-muted)] tracking-[0.12em]">[{p.code}]</span>
+                  <div class="h-px flex-1 bg-[var(--color-border)]"></div>
+                </div>
+                <h3 class="font-display font-semibold text-[1.125rem] leading-snug text-[var(--color-text-primary)] mb-2">
+                  {p.title}
+                </h3>
+                <p class="body-md text-[var(--color-text-secondary)] leading-relaxed">
+                  {p.body}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <Button variant="secondary" href="#contacto">
+              <span>Solicitar paquete de muestra</span>
+            </Button>
+            <Badge variant="nominal" withDot>Validado contra especificación</Badge>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="relative bg-[var(--color-text-primary)] text-[var(--color-surface)] rounded-lg overflow-hidden shadow-elevated">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-[var(--color-sage)]/20 bg-[var(--color-text-primary)]">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-sage)] anim-pulse-dot"></span>
+                <span class="label-sm text-[var(--color-sage)] tracking-[0.1em]">SERIAL OUTPUT · 115200</span>
+              </div>
+              <span class="label-sm text-[var(--color-sage)]/60">v1.0</span>
             </div>
-            <div class="flex flex-col gap-0.5 text-right">
-              <span class="label-sm text-[var(--color-text-muted)]">Cobertura</span>
-              <span class="telemetry-num text-[var(--color-text-primary)]">94%</span>
-            </div>
-            <div class="flex flex-col gap-0.5 text-right">
-              <span class="label-sm text-[var(--color-text-muted)]">Latencia</span>
-              <span class="telemetry-num text-[var(--color-text-primary)]">42ms</span>
+
+            <div class="p-5 flex flex-col gap-3 font-mono text-[0.6875rem] leading-relaxed">
+              <div class="flex items-center gap-2 text-[var(--color-sage)]/50">
+                <span class="opacity-60">[BOOT]</span>
+                <span class="opacity-80">I²C scan · 0x28 found · 0x77 found</span>
+              </div>
+              <div class="flex items-center gap-2 text-[var(--color-sage)]/50">
+                <span class="opacity-60">[INIT]</span>
+                <span class="opacity-80">BNO085 OK · BME688 OK · LoRa OK · SD OK</span>
+              </div>
+              <div class="flex items-center gap-2 text-[var(--color-sage)]/50">
+                <span class="opacity-60">[REF ]</span>
+                <span class="opacity-80">P₀ = 1013.25 hPa</span>
+              </div>
+              <div class="h-px bg-[var(--color-sage)]/15 my-1"></div>
+              <div class="text-[var(--color-sage)]/85">
+                <span class="opacity-60">[TX ]</span> 0001,00:00:01,1,0.0,25.4,8.12,0.02,-0.01,0.99,WAIT,19.406521,-102.058721,998.21,62.5,15432,0.01,-0.02,0.00,32.4,-18.2,41.7
+              </div>
+              <div class="text-[var(--color-sage)]/85">
+                <span class="opacity-60">[TX ]</span> 0001,00:00:02,2,0.8,25.5,8.10,0.10,-0.05,1.00,DESC,19.406530,-102.058740,998.05,62.2,15120,0.02,-0.01,0.01,31.9,-18.5,42.0
+              </div>
+              <div class="text-[var(--color-sage)]/85">
+                <span class="opacity-60">[SD ]</span> <span class="text-[var(--color-sage)]">appended · 2 lines</span>
+              </div>
+              <div class="text-[var(--color-sage)]/50">
+                <span class="opacity-60">[LOOP]</span> cycle = 1002 ms · slack 0.2%
+              </div>
             </div>
           </div>
         </div>

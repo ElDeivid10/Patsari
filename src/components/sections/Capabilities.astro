@@ -11,56 +11,63 @@ interface Capability {
   description: string;
   status: "nominal" | "standby" | "telemetry";
   metric: string;
+  pin: string;
   sparkData?: number[];
 }
 
 const capabilities: Capability[] = [
   {
-    code: "01",
-    title: "Monitoreo orbital",
-    description: "Seguimiento continuo de plataformas satelitales LEO y MEO con corrección orbital sub-métrica y telemetría cifrada.",
+    code: "MOD-01",
+    title: "Navegación inercial",
+    description: "Acelerómetro, giroscopio y magnetómetro de 9 ejes vía BNO085. Rango ±16 g para registrar los esfuerzos del lanzamiento y descenso. Aceleración en g con 2 decimales para la trama.",
     status: "nominal",
-    metric: "247 objetos rastreados",
+    metric: "±16 g · 2000 °/s",
+    pin: "I²C · A4/A5",
     sparkData: [22, 28, 24, 31, 28, 35, 32, 38, 36, 42, 39, 46, 44, 51, 48, 55, 52],
   },
   {
-    code: "02",
-    title: "Sensores geoespaciales",
-    description: "Red distribuida de estaciones GNSS, LiDAR y cámaras multiespectrales con sincronización PTP a 0.5ms.",
-    status: "nominal",
-    metric: "248 nodos activos",
+    code: "MOD-02",
+    title: "Sensado ambiental",
+    description: "Presión barométrica, temperatura, humedad relativa y resistencia de gas (indicador VOC). Altitud relativa calculada con presión de referencia capturada al inicio de la misión.",
+    status: "telemetry",
+    metric: "300–1100 hPa · −40…85 °C",
+    pin: "I²C · A4/A5",
     sparkData: [38, 35, 42, 39, 45, 42, 48, 46, 52, 49, 55, 53, 58, 55, 62, 59, 65],
   },
   {
-    code: "03",
-    title: "Telemetría atmosférica",
-    description: "Lectura continua de presión, temperatura, humedad, aerosoles y compuestos traza con calibración in-situ.",
-    status: "telemetry",
-    metric: "1.2M lecturas/h",
+    code: "MOD-03",
+    title: "Geoposicionamiento",
+    description: "Receptor GPS NEO-6M conectado por UART a 9600 bps. Entrega latitud y longitud con estado de fix; sin fix transmite 0.000000,0.000000 sin bloquear el ciclo principal.",
+    status: "nominal",
+    metric: "NEO-6M · 10 Hz",
+    pin: "UART · D4/D5",
     sparkData: [12, 15, 18, 22, 19, 25, 28, 32, 29, 35, 38, 42, 39, 45, 48, 52, 49],
   },
   {
-    code: "04",
-    title: "Análisis espectral",
-    description: "Procesamiento de firmas espectrales en bandas UV, visible, NIR y SWIR para clasificación de cobertura.",
+    code: "MOD-04",
+    title: "Enlace LoRa 1 Hz",
+    description: "Transmisor SX1278 a ~433 MHz compartido en SPI con la microSD. Selección independiente por CS: D9 para LoRa, D10 para SD. Misma cadena ASCII se transmite y se guarda.",
     status: "nominal",
-    metric: "12 bandas procesadas",
+    metric: "PA +14 dBm · SF7/BW125",
+    pin: "SPI · CS=D9",
     sparkData: [45, 42, 48, 52, 49, 55, 58, 62, 59, 65, 68, 72, 69, 75, 78, 82, 79],
   },
   {
-    code: "05",
-    title: "Procesamiento de señales",
-    description: "Pipeline FPGA-accelerated para filtrado, demodulación y decodificación de señales satelitales en banda S/X.",
-    status: "standby",
-    metric: "8.4 GB/s throughput",
+    code: "MOD-05",
+    title: "Registro redundante",
+    description: "Lector microSD en SPI con CS=D10. Genera TELEMETRY.CSV con encabezado de 21 columnas y una línea por paquete. Verifica disponibilidad antes de cada escritura.",
+    status: "nominal",
+    metric: "CSV · FAT32 · 1 línea/seg",
+    pin: "SPI · CS=D10",
     sparkData: [28, 32, 29, 35, 38, 34, 41, 38, 44, 42, 48, 45, 51, 48, 54, 52, 58],
   },
   {
-    code: "06",
-    title: "Sistemas de misión",
-    description: "Planificación, secuenciado y control de operaciones multi-satélite con redundancia N+2 y failover < 800ms.",
-    status: "nominal",
-    metric: "99.97% uptime",
+    code: "MOD-06",
+    title: "Máquina de estados",
+    description: "Detector de fases WAIT → DESC → LAND por umbral de altitud, tendencia sostenida y estabilidad temporal. LAND es terminal y se conserva durante el resto de la misión.",
+    status: "telemetry",
+    metric: "WAIT · DESC · LAND",
+    pin: "lógica · millis()",
     sparkData: [88, 89, 91, 92, 94, 93, 95, 96, 97, 96, 98, 97, 99, 98, 99, 99, 99],
   },
 ];
@@ -70,9 +77,9 @@ const capabilities: Capability[] = [
   <Container>
     <div class="flex flex-col gap-14">
       <SectionHeader
-        code="CAP-001"
-        title="Capacidades operativas para el monitoreo continuo de la Tierra"
-        description="Seis módulos instrumentales que cubren el ciclo completo de captura, transmisión, procesamiento y diseminación de datos geoespaciales y atmosféricos."
+        code="MOD-00"
+        title="Seis módulos instrumentales del prototipo"
+        description="Cada módulo es una unidad funcional con su bus, pinout y tipo de dato asignado. La lista refleja literalmente los componentes soldados en la placa del PROBE-01."
       />
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-lg overflow-hidden">
@@ -106,11 +113,15 @@ const capabilities: Capability[] = [
             </div>
 
             <div class="pt-4 border-t border-[var(--color-border)] flex flex-col gap-3">
-              <div class="flex items-center justify-between">
-                <span class="label-sm text-[var(--color-text-secondary)]">Estado actual</span>
-                <span class="label-sm text-[var(--color-text-primary)] font-medium">{cap.metric}</span>
+              <div class="flex items-center justify-between gap-3">
+                <span class="label-sm text-[var(--color-text-secondary)]">Spec</span>
+                <span class="label-sm text-[var(--color-text-primary)] font-medium text-right">{cap.metric}</span>
               </div>
-              <div class="h-7 -mx-1">
+              <div class="flex items-center justify-between gap-3">
+                <span class="label-sm text-[var(--color-text-muted)]">Bus / pin</span>
+                <span class="label-sm text-[var(--color-primary-hover)] font-mono">{cap.pin}</span>
+              </div>
+              <div class="h-7 -mx-1 mt-1">
                 {cap.sparkData && <TelemetrySparkline data={cap.sparkData} variant="sage" />}
               </div>
             </div>

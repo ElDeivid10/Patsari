@@ -20,7 +20,7 @@ const {
 
 <header
   id={id}
-  class={`flex flex-col gap-6 ${align === "center" ? "items-center text-center" : "items-start"} ${className}`}
+  class:list={["flex flex-col gap-6", align === "center" ? "items-center text-center" : "items-start", className]}
 >
   {code && (
     <div class="flex items-center gap-3">
@@ -34,7 +34,7 @@ const {
   </h2>
 
   {description && (
-    <p class={`body-lg text-[var(--color-text-secondary)] max-w-2xl ${align === "center" ? "mx-auto" : ""}`}>
+    <p class:list={["body-lg text-[var(--color-text-secondary)] max-w-2xl", align === "center" ? "mx-auto" : ""]}>
       {description}
     </p>
   )}

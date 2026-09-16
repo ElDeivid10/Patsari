@@ -14,33 +14,33 @@ import StatusDot from "../ui/StatusDot.astro";
       <div class="lg:col-span-5 flex flex-col gap-7">
         <SectionHeader
           code="CONTACTO"
-          title="Iniciar una conversación técnica"
-          description="Respondemos consultas de agencias, operadores, investigadores y equipos de producto. La primera llamada es siempre con un ingeniero."
+          title="Conversaciones técnicas antes del siguiente vuelo"
+          description="Estamos abiertos a colaboraciones con otros equipos, intercambios de telemetría y mentoría técnica. Si quieres revisar nuestro esquemático o replicar PROBE-01, escríbenos."
         />
 
         <div class="flex flex-col gap-4">
           <div class="flex items-start gap-3 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md hover:border-[var(--color-border-active)] transition-colors">
             <div class="flex flex-col gap-1 flex-1">
-              <span class="label-sm text-[var(--color-text-secondary)]">Consola operativa</span>
-              <span class="body-md text-[var(--color-text-primary)] font-medium">console.patsani.io</span>
-              <span class="body-sm text-[var(--color-text-muted)]">Acceso SSO + 2FA · SAML / OIDC</span>
+              <span class="label-sm text-[var(--color-text-secondary)]">Repositorio de telemetría</span>
+              <span class="body-md text-[var(--color-text-primary)] font-medium">github.com/patsani/probe-01</span>
+              <span class="body-sm text-[var(--color-text-muted)]">Firmware · esquemáticos · CSV de vuelos previos</span>
             </div>
-            <Badge variant="nominal" withDot size="sm">ONLINE</Badge>
+            <Badge variant="nominal" withDot size="sm">PÚBLICO</Badge>
           </div>
 
           <div class="flex items-start gap-3 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md">
             <div class="flex flex-col gap-1 flex-1">
-              <span class="label-sm text-[var(--color-text-secondary)]">Correo directo</span>
-              <span class="body-md text-[var(--color-text-primary)] font-medium">ops@patsani.io</span>
-              <span class="body-sm text-[var(--color-text-muted)]">Cifrado PGP · Key fingerprint 4D9A…E2C1</span>
+              <span class="label-sm text-[var(--color-text-secondary)]">Correo del equipo</span>
+              <span class="body-md text-[var(--color-text-primary)] font-medium">equipo@patsani.io</span>
+              <span class="body-sm text-[var(--color-text-muted)]">Respuesta típica &lt; 48 h en horario local MX</span>
             </div>
           </div>
 
           <div class="flex items-start gap-3 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md">
             <div class="flex flex-col gap-1 flex-1">
-              <span class="label-sm text-[var(--color-text-secondary)]">Operación 24/7</span>
-              <span class="body-md text-[var(--color-text-primary)] font-medium">+52 55 8421 6630</span>
-              <span class="body-sm text-[var(--color-text-muted)]">NOC · respuesta &lt; 15 min para SLA enterprise</span>
+              <span class="label-sm text-[var(--color-text-secondary)]">Reuniones técnicas</span>
+              <span class="body-md text-[var(--color-text-primary)] font-medium">Sábado 11:00 — 14:00 CST</span>
+              <span class="body-sm text-[var(--color-text-muted)]">Presencial · Lab CDMX / remoto bajo solicitud</span>
             </div>
           </div>
         </div>
@@ -48,8 +48,8 @@ import StatusDot from "../ui/StatusDot.astro";
         <div class="flex items-center gap-3 pt-2">
           <StatusDot variant="telemetry" size="md" pulse ring />
           <div class="flex flex-col">
-            <span class="label-sm text-[var(--color-text-primary)] font-medium">NOC respondiendo</span>
-            <span class="body-sm text-[var(--color-text-muted)]">Turno actual · MX-02 / CL-01</span>
+            <span class="label-sm text-[var(--color-text-primary)] font-medium">Próxima campaña</span>
+            <span class="body-sm text-[var(--color-text-muted)]">Lanzamiento estratosférico · Q3 2026</span>
           </div>
         </div>
       </div>
@@ -61,26 +61,26 @@ import StatusDot from "../ui/StatusDot.astro";
           </div>
 
           <div class="flex items-center justify-between pb-2 border-b border-[var(--color-border)]">
-            <CoordinateBreadcrumb segments={["PATSANI", "FORM", "CONTACT", "NEW-REQ"]} />
-            <span class="label-sm text-[var(--color-text-muted)]">TS · auto</span>
+            <CoordinateBreadcrumb segments={["PATSANI", "TEAM-0001", "CONTACT", "NEW-REQ"]} />
+            <span class="label-sm text-[var(--color-text-muted)]">UTC · auto</span>
           </div>
 
           <div class="grid sm:grid-cols-2 gap-5">
-            <Input label="Nombre completo" name="name" placeholder="Ada Lovelace" required />
-            <Input label="Organización" name="org" placeholder="Agencia / Empresa" required />
+            <Input label="Nombre" name="name" placeholder="Ada Lovelace" required />
+            <Input label="Equipo o institución" name="org" placeholder="Equipo / Agencia" required />
           </div>
 
           <div class="grid sm:grid-cols-2 gap-5">
             <Input label="Correo" name="email" type="email" placeholder="ada@example.org" required suffix="@" />
-            <Input label="Rol" name="role" placeholder="Director de programa" />
+            <Input label="Rol" name="role" placeholder="Líder técnico" />
           </div>
 
-          <Input label="Sitio / Coordenadas del proyecto" name="location" placeholder="-34.6, -58.4" prefix="LAT/LON" />
+          <Input label="Sitio / Coordenadas del próximo vuelo" name="location" placeholder="19.4065, −102.0587" prefix="LAT/LON" />
 
           <Input
-            label="Descripción breve"
+            label="Mensaje"
             name="message"
-            placeholder="Cuéntenos sobre la misión, sensores requeridos y plazos."
+            placeholder="Contanos sobre la colaboración, campaña o revisión técnica."
             multiline
             rows={4}
             required
@@ -88,13 +88,13 @@ import StatusDot from "../ui/StatusDot.astro";
 
           <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-[var(--color-border)]">
             <div class="flex items-center gap-2 text-[var(--color-text-muted)]">
-              <span class="label-sm">Cifrado</span>
-              <span class="label-sm text-[var(--color-primary-hover)] font-medium">TLS 1.3</span>
+              <span class="label-sm">Privacidad</span>
+              <span class="label-sm text-[var(--color-primary-hover)] font-medium">No tracking</span>
               <span class="text-[var(--color-border)]">·</span>
-              <span class="label-sm text-[var(--color-primary-hover)] font-medium">AES-256-GCM</span>
+              <span class="label-sm text-[var(--color-primary-hover)] font-medium">Sin newsletters</span>
             </div>
             <Button variant="primary" size="lg" type="submit">
-              <span>Transmitir solicitud</span>
+              <span>Enviar mensaje</span>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></path>
               </svg>
